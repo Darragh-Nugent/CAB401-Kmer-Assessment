@@ -164,7 +164,7 @@ double CompareBacteria(Bacteria* b1, Bacteria* b2)
 	double vector_len1 = 0;
 	double vector_len2 = 0;
 	
-#pragma omp parallel for
+#pragma omp parallel for reduction(+:correlation, vector_len1, vector_len2)
 	for (long i = 0; i < M_6; i++)
 	{
 		double stochastic1 = b1->stochastic_compute(i);
