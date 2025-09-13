@@ -6,6 +6,7 @@
             "command": "g++",
             "args": [
                 "-fdiagnostics-color=always",
+				"-fopenmp",
                 "-g",
                 "${file}",
                 "-o",
