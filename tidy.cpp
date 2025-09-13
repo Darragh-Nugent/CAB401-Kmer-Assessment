@@ -112,6 +112,11 @@ public:
 		fclose(bacteria_file);
 	}
 
+	Bacteria()
+	{
+
+	}
+
 	~Bacteria()
 	{
 		delete mers_6;
@@ -189,21 +194,34 @@ double CompareBacteria(Bacteria* b1, Bacteria* b2)
 	return correlation / (sqrt(vector_len1) * sqrt(vector_len2));
 }
 
-void CompareAllBacteria()
+void CreateBacteria(Bacteria** bacteria)
 {
+	#pragma omp parallel for
 	for (int i = 0; i < number_bacteria - 1; i++)
 	{
-		Bacteria* b1 = new Bacteria(bacteria_name[i]);
+		bacteria[i] = new Bacteria(bacteria_name[i]);
+	}
+}
+
+void CompareAllBacteria()
+{
+	Bacteria* bacteria[number_bacteria];
+	CreateBacteria(bacteria);
+
+	for (int i = 0; i < number_bacteria - 1; i++)
+	{
+		Bacteria* b1 = bacteria[i];
 
 		for (int j = i + 1; j < number_bacteria; j++)
 		{
-			Bacteria* b2 = new Bacteria(bacteria_name[j]);
+			Bacteria* b2 = bacteria[j];
 			double correlation = CompareBacteria(b1, b2);
 			printf("%03d %03d -> %.10lf\n", i, j, correlation);
-			delete b2;
+			// delete b2;
 		}
 		delete b1;
 	}
+	delete bacteria[number_bacteria - 1];
 }
 
 int main(int argc, char* argv[])
