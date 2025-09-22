@@ -210,7 +210,7 @@ int main(int argc, char* argv[])
 {
 	time_t t1 = time(NULL);
 
-	omp_set_num_threads(10);  // Set to 4 threads
+	omp_set_num_threads(1);
 
 	Init();
 	ReadInputFile("list.txt");
