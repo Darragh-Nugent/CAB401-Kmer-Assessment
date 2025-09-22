@@ -164,7 +164,6 @@ double CompareBacteria(Bacteria* b1, Bacteria* b2)
 	double vector_len1 = 0;
 	double vector_len2 = 0;
 	
-#pragma omp parallel for reduction(+:correlation, vector_len1, vector_len2)
 	for (long i = 0; i < M_6; i++)
 	{
 		double stochastic1 = b1->stochastic_compute(i);
@@ -209,8 +208,6 @@ void CompareAllBacteria()
 int main(int argc, char* argv[])
 {
 	time_t t1 = time(NULL);
-
-	omp_set_num_threads(1);
 
 	Init();
 	ReadInputFile("list.txt");
