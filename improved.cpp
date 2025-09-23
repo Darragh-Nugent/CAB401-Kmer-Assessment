@@ -3,6 +3,7 @@
 #include <string.h>
 #include <time.h>
 #include <math.h>
+#include <omp.h>
 
 int number_bacteria;
 char** bacteria_name;
@@ -246,13 +247,15 @@ double CompareBacteria(Bacteria* b1, Bacteria* b2)
 
 void CompareAllBacteria()
 {
-	Bacteria** b = new Bacteria*[number_bacteria];
+   Bacteria** b = new Bacteria*[number_bacteria];
+   #pragma omp parallel for
    for(int i=0; i<number_bacteria; i++)
 	{
 		printf("load %d of %d\n", i+1, number_bacteria);
 		b[i] = new Bacteria(bacteria_name[i]);
 	}
 
+   #pragma omp parallel for
    for(int i=0; i<number_bacteria-1; i++)
 		for(int j=i+1; j<number_bacteria; j++)
 		{
@@ -266,11 +269,13 @@ int main(int argc,char * argv[])
 {
 	time_t t1 = time(NULL);
 
+	omp_set_num_threads(4);
+
 	Init();
 	ReadInputFile("list.txt");
 	CompareAllBacteria();
 
 	time_t t2 = time(NULL);
-	printf("time elapsed: %ld mers_5s\n", t2 - t1); 
+	printf("time elapsed: %ld seconds\n", t2 - t1); 
 	return 0;
 }
