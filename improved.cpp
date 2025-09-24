@@ -30,8 +30,8 @@ private:
 	long* mers_5;
 	long mers_1[AA_NUMBER];
 	long indexs;
-	long total;
-	long total_l;
+	long total_mers_6;
+	long total_mers_1;
 	long complement;
 
 	void InitVectors()
@@ -41,20 +41,20 @@ private:
 		memset(mers_6, 0, M_6 * sizeof(long));
 		memset(mers_5, 0, M_5 * sizeof(long));
 		memset(mers_1, 0, AA_NUMBER * sizeof(long));
-		total = 0;
-		total_l = 0;
+		total_mers_6 = 0;
+		total_mers_1 = 0;
 		complement = 0;
 	}
 
 	void init_buffer(char* buffer)
 	{
-		complement++;
+		complement++; 
 		indexs = 0;
 		for (int i=0; i<LEN-1; i++)
 		{
 			short enc = encode(buffer[i]);
 			mers_1[enc]++;
-			total_l++;
+			total_mers_1++;
 			indexs = indexs * AA_NUMBER + enc;
 		}
 		mers_5[indexs]++;
@@ -64,18 +64,18 @@ private:
 	{
 		short enc = encode(ch);
 		mers_1[enc]++;
-		total_l++;
+		total_mers_1++;
 		long index = indexs * AA_NUMBER + enc;
 		mers_6[index]++;
-		total++;
+		total_mers_6++;
 		indexs = (indexs % M_4) * AA_NUMBER + enc;
 		mers_5[indexs]++;
 	}
 
 public:
 	long count;
-	double* tv;
-	long *ti;
+	double* sig_t_vec;
+	long *sig_t_indx_vec;
 
 	Bacteria(char* filename)
 	{
@@ -102,8 +102,8 @@ public:
 				cont_buffer(ch);
 		}
 
-		long total_plus_complement = total + complement;
-		double total_div_2 = total * 0.5;
+		long total_plus_complement = total_mers_6 + complement;
+		double total_div_2 = total_mers_6 * 0.5;
 		int i_mod_aa_number = 0;
 		int i_div_aa_number = 0;
 		long i_mod_M1 = 0;
@@ -111,7 +111,7 @@ public:
 
 		double one_l_div_total[AA_NUMBER];
 		for (int i=0; i<AA_NUMBER; i++)
-			one_l_div_total[i] = (double)mers_1[i] / total_l;
+			one_l_div_total[i] = (double)mers_1[i] / total_mers_1;
 		
 		double* mers_5_div_total = new double[M_5];
 		for (int i=0; i<M_5; i++)
@@ -157,16 +157,16 @@ public:
 		delete mers_6;
 		delete mers_5;
 
-		tv = new double[count];
-		ti = new long[count];
+		sig_t_vec = new double[count];
+		sig_t_indx_vec = new long[count];
 
 		int pos = 0;
 		for (long i=0; i<M_6; i++)
 		{
 			if (t[i] != 0)
 			{
-				tv[pos] = t[i];
-				ti[pos] = i;
+				sig_t_vec[pos] = t[i];
+				sig_t_indx_vec[pos] = i;
 				pos++;
 			}
 		}
@@ -206,24 +206,24 @@ double CompareBacteria(Bacteria* b1, Bacteria* b2)
 	long p2 = 0;
 	while (p1 < b1->count && p2 < b2->count)
 	{
-		long n1 = b1->ti[p1];
-		long n2 = b2->ti[p2];
+		long n1 = b1->sig_t_indx_vec[p1];
+		long n2 = b2->sig_t_indx_vec[p2];
 		if (n1 < n2)
 		{
-			double t1 = b1->tv[p1];
+			double t1 = b1->sig_t_vec[p1];
 			vector_len1 += (t1 * t1);
 			p1++;
 		}
 		else if (n2 < n1)
 		{
-			double t2 = b2->tv[p2];
+			double t2 = b2->sig_t_vec[p2];
 			p2++;
 			vector_len2 += (t2 * t2);
 		}
 		else
 		{
-			double t1 = b1->tv[p1++];
-			double t2 = b2->tv[p2++];
+			double t1 = b1->sig_t_vec[p1++];
+			double t2 = b2->sig_t_vec[p2++];
 			vector_len1 += (t1 * t1);
 			vector_len2 += (t2 * t2);
 			correlation += t1 * t2;
@@ -231,14 +231,14 @@ double CompareBacteria(Bacteria* b1, Bacteria* b2)
 	}
 	while (p1 < b1->count)
 	{
-		long n1 = b1->ti[p1];
-		double t1 = b1->tv[p1++];
+		long n1 = b1->sig_t_indx_vec[p1];
+		double t1 = b1->sig_t_vec[p1++];
 		vector_len1 += (t1 * t1);
 	}
 	while (p2 < b2->count)
 	{
-		long n2 = b2->ti[p2];
-		double t2 = b2->tv[p2++];
+		long n2 = b2->sig_t_indx_vec[p2];
+		double t2 = b2->sig_t_vec[p2++];
 		vector_len2 += (t2 * t2);
 	}
 
