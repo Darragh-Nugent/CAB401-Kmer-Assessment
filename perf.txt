@@ -1,0 +1,177 @@
+# To display the perf.data header info, please use --header/--header-only options.
+#
+#
+# Total Lost Samples: 0
+#
+# Samples: 4K of event 'cycles:Pu'
+# Event count (approx.): 164488870137
+#
+# Children      Self  Command   Shared Object     Symbol                                   
+# ........  ........  ........  ................  .........................................
+#
+   100.00%     0.00%  improved  improved          [.] _start
+            |
+            ---_start
+               __libc_start_main@@GLIBC_2.34
+               __libc_start_call_main
+               main
+               CompareAllBacteria()
+               |          
+               |--60.35%--Bacteria::Bacteria(char*)
+               |          |          
+               |          |--5.17%--__memset_avx2_unaligned_erms
+               |          |          |          
+               |          |           --3.76%--0xffffffffa62013a0
+               |          |          
+               |          |--1.76%--0xffffffffa62013a0
+               |          |          
+               |           --0.58%--Bacteria::cont_buffer(char)
+               |          
+                --39.59%--CompareBacteria(Bacteria*, Bacteria*)
+
+   100.00%     0.00%  improved  libc.so.6         [.] __libc_start_main@@GLIBC_2.34
+            |
+            ---__libc_start_main@@GLIBC_2.34
+               __libc_start_call_main
+               main
+               CompareAllBacteria()
+               |          
+               |--60.35%--Bacteria::Bacteria(char*)
+               |          |          
+               |          |--5.17%--__memset_avx2_unaligned_erms
+               |          |          |          
+               |          |           --3.76%--0xffffffffa62013a0
+               |          |          
+               |          |--1.76%--0xffffffffa62013a0
+               |          |          
+               |           --0.58%--Bacteria::cont_buffer(char)
+               |          
+                --39.59%--CompareBacteria(Bacteria*, Bacteria*)
+
+   100.00%     0.00%  improved  libc.so.6         [.] __libc_start_call_main
+            |
+            ---__libc_start_call_main
+               main
+               CompareAllBacteria()
+               |          
+               |--60.35%--Bacteria::Bacteria(char*)
+               |          |          
+               |          |--5.17%--__memset_avx2_unaligned_erms
+               |          |          |          
+               |          |           --3.76%--0xffffffffa62013a0
+               |          |          
+               |          |--1.76%--0xffffffffa62013a0
+               |          |          
+               |           --0.58%--Bacteria::cont_buffer(char)
+               |          
+                --39.59%--CompareBacteria(Bacteria*, Bacteria*)
+
+   100.00%     0.00%  improved  improved          [.] main
+            |
+            ---main
+               CompareAllBacteria()
+               |          
+               |--60.35%--Bacteria::Bacteria(char*)
+               |          |          
+               |          |--5.17%--__memset_avx2_unaligned_erms
+               |          |          |          
+               |          |           --3.76%--0xffffffffa62013a0
+               |          |          
+               |          |--1.76%--0xffffffffa62013a0
+               |          |          
+               |           --0.58%--Bacteria::cont_buffer(char)
+               |          
+                --39.59%--CompareBacteria(Bacteria*, Bacteria*)
+
+   100.00%     0.00%  improved  improved          [.] CompareAllBacteria()
+            |
+            ---CompareAllBacteria()
+               |          
+               |--60.35%--Bacteria::Bacteria(char*)
+               |          |          
+               |          |--5.17%--__memset_avx2_unaligned_erms
+               |          |          |          
+               |          |           --3.76%--0xffffffffa62013a0
+               |          |          
+               |          |--1.76%--0xffffffffa62013a0
+               |          |          
+               |           --0.58%--Bacteria::cont_buffer(char)
+               |          
+                --39.59%--CompareBacteria(Bacteria*, Bacteria*)
+
+    60.35%    52.84%  improved  improved          [.] Bacteria::Bacteria(char*)
+            |          
+            |--52.84%--_start
+            |          __libc_start_main@@GLIBC_2.34
+            |          __libc_start_call_main
+            |          main
+            |          CompareAllBacteria()
+            |          Bacteria::Bacteria(char*)
+            |          
+             --7.51%--Bacteria::Bacteria(char*)
+                       |          
+                       |--5.17%--__memset_avx2_unaligned_erms
+                       |          |          
+                       |           --3.76%--0xffffffffa62013a0
+                       |          
+                       |--1.76%--0xffffffffa62013a0
+                       |          
+                        --0.58%--Bacteria::cont_buffer(char)
+
+    39.59%    39.59%  improved  improved          [.] CompareBacteria(Bacteria*, Bacteria*)
+            |
+            ---_start
+               __libc_start_main@@GLIBC_2.34
+               __libc_start_call_main
+               main
+               CompareAllBacteria()
+               CompareBacteria(Bacteria*, Bacteria*)
+
+     5.52%     5.52%  improved  [unknown]         [k] 0xffffffffa62013a0
+            |
+            ---_start
+               __libc_start_main@@GLIBC_2.34
+               __libc_start_call_main
+               main
+               CompareAllBacteria()
+               Bacteria::Bacteria(char*)
+               |          
+               |--3.76%--__memset_avx2_unaligned_erms
+               |          0xffffffffa62013a0
+               |          
+                --1.76%--0xffffffffa62013a0
+
+     5.17%     1.41%  improved  libc.so.6         [.] __memset_avx2_unaligned_erms
+            |          
+            |--3.76%--__memset_avx2_unaligned_erms
+            |          0xffffffffa62013a0
+            |          
+             --1.41%--_start
+                       __libc_start_main@@GLIBC_2.34
+                       __libc_start_call_main
+                       main
+                       CompareAllBacteria()
+                       Bacteria::Bacteria(char*)
+                       __memset_avx2_unaligned_erms
+
+     0.58%     0.58%  improved  improved          [.] Bacteria::cont_buffer(char)
+            |
+            ---_start
+               __libc_start_main@@GLIBC_2.34
+               __libc_start_call_main
+               main
+               CompareAllBacteria()
+               Bacteria::Bacteria(char*)
+               Bacteria::cont_buffer(char)
+
+     0.06%     0.00%  improved  libc.so.6         [.] printf
+     0.06%     0.00%  improved  libc.so.6         [.] __vfprintf_internal
+     0.03%     0.03%  improved  libc.so.6         [.] __strchrnul_ifunc@plt
+     0.03%     0.03%  improved  libc.so.6         [.] __printf_fp_l_buffer
+     0.03%     0.00%  improved  libc.so.6         [.] __printf_buffer
+     0.01%     0.01%  improved  libc.so.6         [.] _IO_getc
+
+
+#
+# (Tip: Use parent filter to see specific call path: perf report -p <regex>)
+#
