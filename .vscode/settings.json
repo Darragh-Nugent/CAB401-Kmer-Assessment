@@ -1,0 +1,13 @@
+{
+    "files.associations": {
+        "random": "cpp",
+        "algorithm": "cpp",
+        "bitset": "cpp",
+        "format": "cpp",
+        "__bit_reference": "cpp",
+        "chrono": "cpp",
+        "map": "cpp",
+        "unordered_map": "cpp",
+        "new": "cpp"
+    }
+}

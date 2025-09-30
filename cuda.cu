@@ -246,7 +246,7 @@ double CompareBacteria(Bacteria* b1, Bacteria* b2)
 
 void CompareAllBacteria()
 {
-	Bacteria** b = new Bacteria*[number_bacteria];
+   Bacteria** b = new Bacteria*[number_bacteria];
    for(int i=0; i<number_bacteria; i++)
 	{
 		printf("load %d of %d\n", i+1, number_bacteria);
@@ -271,6 +271,6 @@ int main(int argc,char * argv[])
 	CompareAllBacteria();
 
 	time_t t2 = time(NULL);
-	printf("time elapsed: %ld mers_5s\n", t2 - t1); 
+	printf("time elapsed: %ld seconds\n", t2 - t1); 
 	return 0;
 }
