@@ -4,6 +4,7 @@
 #include <time.h>
 #include <math.h>
 #include <unordered_map>
+#include <map>
 
 int number_bacteria;
 char **bacteria_name;
@@ -125,21 +126,21 @@ public:
 
 		count = 0;
 		// double *t = new double[M_6];
-		std::unordered_map<long, double> t;
+		std::map<long, double> t;
 
 		for (auto &[key, value] : mers_6)
 		{
-			double p1 = mers_5_div_total[i_div_aa_number];
-			double p2 = one_l_div_total[i_mod_aa_number];
-			double p3 = mers_5_div_total[i_mod_M5];
-			double p4 = one_l_div_total[i_div_M5];
-			double stochastic = (p1 * p2 + p3 * p4) * total_div_2;
-
 			i_mod_aa_number = key % AA_NUMBER;
 			i_div_aa_number = key / AA_NUMBER;
 
 			i_mod_M5 = key % M_5;
 			i_div_M5 = key / M_5;
+
+			double p1 = mers_5_div_total[i_div_aa_number];
+			double p2 = one_l_div_total[i_mod_aa_number];
+			double p3 = mers_5_div_total[i_mod_M5];
+			double p4 = one_l_div_total[i_div_M5];
+			double stochastic = (p1 * p2 + p3 * p4) * total_div_2;
 
 			// if (i_mod_aa_number == AA_NUMBER - 1)
 			// {
@@ -189,19 +190,19 @@ public:
 	}
 };
 
-
-void ReadInputFile(const char* input_name)
+void ReadInputFile(const char *input_name)
 {
-	FILE* input_file = fopen(input_name, "r");
-	if (input_file == NULL) {
+	FILE *input_file = fopen(input_name, "r");
+	if (input_file == NULL)
+	{
 		fprintf(stderr, "Error: failed to open file %s\n", input_name);
 		exit(1);
 	}
 
 	fscanf(input_file, "%d", &number_bacteria);
-	bacteria_name = new char*[number_bacteria];
+	bacteria_name = new char *[number_bacteria];
 
-	for(long i=0;i<number_bacteria;i++)
+	for (long i = 0; i < number_bacteria; i++)
 	{
 		char name[10];
 		fscanf(input_file, "%s", name);
@@ -211,11 +212,11 @@ void ReadInputFile(const char* input_name)
 	fclose(input_file);
 }
 
-double CompareBacteria(Bacteria* b1, Bacteria* b2)
+double CompareBacteria(Bacteria *b1, Bacteria *b2)
 {
 	double correlation = 0;
-	double vector_len1=0;
-	double vector_len2=0;
+	double vector_len1 = 0;
+	double vector_len2 = 0;
 	long p1 = 0;
 	long p2 = 0;
 	while (p1 < b1->count && p2 < b2->count)
@@ -261,15 +262,15 @@ double CompareBacteria(Bacteria* b1, Bacteria* b2)
 
 void CompareAllBacteria()
 {
-	Bacteria** b = new Bacteria*[number_bacteria];
-   for(int i=0; i<number_bacteria; i++)
+	Bacteria **b = new Bacteria *[number_bacteria];
+	for (int i = 0; i < number_bacteria; i++)
 	{
-		printf("load %d of %d\n", i+1, number_bacteria);
+		printf("load %d of %d\n", i + 1, number_bacteria);
 		b[i] = new Bacteria(bacteria_name[i]);
 	}
 
-   for(int i=0; i<number_bacteria-1; i++)
-		for(int j=i+1; j<number_bacteria; j++)
+	for (int i = 0; i < number_bacteria - 1; i++)
+		for (int j = i + 1; j < number_bacteria; j++)
 		{
 			printf("%2d %2d -> ", i, j);
 			double correlation = CompareBacteria(b[i], b[j]);
@@ -277,7 +278,7 @@ void CompareAllBacteria()
 		}
 }
 
-int main(int argc,char * argv[])
+int main(int argc, char *argv[])
 {
 	time_t t1 = time(NULL);
 
@@ -286,6 +287,6 @@ int main(int argc,char * argv[])
 	CompareAllBacteria();
 
 	time_t t2 = time(NULL);
-	printf("time elapsed: %ld mers_5s\n", t2 - t1); 
+	printf("time elapsed: %ld mers_5s\n", t2 - t1);
 	return 0;
 }
