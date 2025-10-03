@@ -1,0 +1,20 @@
+# started on Fri Oct  3 13:59:50 2025
+
+
+ Performance counter stats for './sequential':
+
+          30952.27 msec task-clock:u                     #    1.030 CPUs utilized             
+                 0      context-switches:u               #    0.000 /sec                      
+                 0      cpu-migrations:u                 #    0.000 /sec                      
+          10832886      page-faults:u                    #  349.987 K/sec                     
+       79388090948      cycles:u                         #    2.565 GHz                       
+      118387240932      instructions:u                   #    1.49  insn per cycle            
+       27627501297      branches:u                       #  892.584 M/sec                     
+         636035611      branch-misses:u                  #    2.30% of all branches           
+
+      30.038482359 seconds time elapsed
+
+      16.047084000 seconds user
+      14.905624000 seconds sys
+
+

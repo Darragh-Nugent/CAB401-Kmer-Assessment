@@ -1,0 +1,146 @@
+# To display the perf.data header info, please use --header/--header-only options.
+#
+#
+# Total Lost Samples: 0
+#
+# Samples: 2K of event 'cycles:Pu'
+# Event count (approx.): 81581328746
+#
+# Children      Self  Command     Shared Object     Symbol                                   
+# ........  ........  ..........  ................  .........................................
+#
+   100.00%     0.00%  sequential  sequential        [.] _start
+            |
+            ---_start
+               __libc_start_main@@GLIBC_2.34
+               __libc_start_call_main
+               main
+               CompareAllBacteria()
+               |          
+               |--51.65%--Bacteria::Bacteria(char*)
+               |          |          
+               |           --3.41%--0xffffffffa02013a0
+               |          
+               |--37.80%--CompareBacteria(Bacteria*, Bacteria*)
+               |          
+                --10.55%--__memset_avx2_unaligned_erms
+                          |          
+                           --7.62%--0xffffffffa02013a0
+
+   100.00%     0.00%  sequential  libc.so.6         [.] __libc_start_main@@GLIBC_2.34
+            |
+            ---__libc_start_main@@GLIBC_2.34
+               __libc_start_call_main
+               main
+               CompareAllBacteria()
+               |          
+               |--51.65%--Bacteria::Bacteria(char*)
+               |          |          
+               |           --3.41%--0xffffffffa02013a0
+               |          
+               |--37.80%--CompareBacteria(Bacteria*, Bacteria*)
+               |          
+                --10.55%--__memset_avx2_unaligned_erms
+                          |          
+                           --7.62%--0xffffffffa02013a0
+
+   100.00%     0.00%  sequential  libc.so.6         [.] __libc_start_call_main
+            |
+            ---__libc_start_call_main
+               main
+               CompareAllBacteria()
+               |          
+               |--51.65%--Bacteria::Bacteria(char*)
+               |          |          
+               |           --3.41%--0xffffffffa02013a0
+               |          
+               |--37.80%--CompareBacteria(Bacteria*, Bacteria*)
+               |          
+                --10.55%--__memset_avx2_unaligned_erms
+                          |          
+                           --7.62%--0xffffffffa02013a0
+
+   100.00%     0.00%  sequential  sequential        [.] main
+            |
+            ---main
+               CompareAllBacteria()
+               |          
+               |--51.65%--Bacteria::Bacteria(char*)
+               |          |          
+               |           --3.41%--0xffffffffa02013a0
+               |          
+               |--37.80%--CompareBacteria(Bacteria*, Bacteria*)
+               |          
+                --10.55%--__memset_avx2_unaligned_erms
+                          |          
+                           --7.62%--0xffffffffa02013a0
+
+   100.00%     0.00%  sequential  sequential        [.] CompareAllBacteria()
+            |
+            ---CompareAllBacteria()
+               |          
+               |--51.65%--Bacteria::Bacteria(char*)
+               |          |          
+               |           --3.41%--0xffffffffa02013a0
+               |          
+               |--37.80%--CompareBacteria(Bacteria*, Bacteria*)
+               |          
+                --10.55%--__memset_avx2_unaligned_erms
+                          |          
+                           --7.62%--0xffffffffa02013a0
+
+    51.65%    48.19%  sequential  sequential        [.] Bacteria::Bacteria(char*)
+            |          
+            |--48.19%--_start
+            |          __libc_start_main@@GLIBC_2.34
+            |          __libc_start_call_main
+            |          main
+            |          CompareAllBacteria()
+            |          Bacteria::Bacteria(char*)
+            |          
+             --3.46%--Bacteria::Bacteria(char*)
+                       |          
+                        --3.41%--0xffffffffa02013a0
+
+    37.80%    37.80%  sequential  sequential        [.] CompareBacteria(Bacteria*, Bacteria*)
+            |
+            ---_start
+               __libc_start_main@@GLIBC_2.34
+               __libc_start_call_main
+               main
+               CompareAllBacteria()
+               CompareBacteria(Bacteria*, Bacteria*)
+
+    11.03%    11.03%  sequential  [unknown]         [k] 0xffffffffa02013a0
+            |
+            ---_start
+               __libc_start_main@@GLIBC_2.34
+               __libc_start_call_main
+               main
+               CompareAllBacteria()
+               |          
+               |--7.62%--__memset_avx2_unaligned_erms
+               |          0xffffffffa02013a0
+               |          
+                --3.41%--Bacteria::Bacteria(char*)
+                          0xffffffffa02013a0
+
+    10.55%     2.93%  sequential  libc.so.6         [.] __memset_avx2_unaligned_erms
+            |          
+            |--7.62%--__memset_avx2_unaligned_erms
+            |          0xffffffffa02013a0
+            |          
+             --2.93%--_start
+                       __libc_start_main@@GLIBC_2.34
+                       __libc_start_call_main
+                       main
+                       CompareAllBacteria()
+                       __memset_avx2_unaligned_erms
+
+     0.03%     0.03%  sequential  [unknown]         [k] 0xffffffffa0201a60
+     0.02%     0.02%  sequential  libc.so.6         [.] _IO_fread
+
+
+#
+# (Tip: To show IPC for sampling periods use perf record -e '{cycles,instructions}:S' and then browse context)
+#

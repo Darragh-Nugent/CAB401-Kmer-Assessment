@@ -354,7 +354,6 @@ void CompareAllBacteria()
 	}
 
     RetrieveBacteriaInfo(all_counts, local_b, all_sig_t_vec, all_sig_t_indx_vec);
-
     CreateSummaries(all_counts, all_sig_t_vec, all_sig_t_indx_vec, summaries);
 
 	for (int i = rank; i < number_bacteria - 1; i += size)
@@ -366,8 +365,6 @@ void CompareAllBacteria()
 			printf("%.20lf\n", correlation);
 		}
 	}
-
-
 
 	FreeBacteria(summaries, local_b, all_counts, all_sig_t_vec, all_sig_t_indx_vec);
 }
