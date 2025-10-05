@@ -166,20 +166,6 @@ public:
         delete mers_6;
         delete mers_5;
 
-        // sig_t_vec = new double[count];
-        // sig_t_indx_vec = new long[count];
-
-        // int pos = 0;
-        // for (auto &[key, value] : t)
-        // {
-        //     if (value != 0)
-        //     {
-        //         sig_t_vec[pos] = value;
-        //         sig_t_indx_vec[pos] = key;
-        //         pos++;
-        //     }
-        // }
-
         fclose(bacteria_file);
     }
 };
