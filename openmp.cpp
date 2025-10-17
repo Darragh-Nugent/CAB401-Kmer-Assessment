@@ -252,19 +252,22 @@ double CompareBacteria(Bacteria *b1, Bacteria *b2)
 
 void CompareAllBacteria()
 {
+	auto start = std::chrono::high_resolution_clock::now();
+
 	Bacteria **b = new Bacteria *[number_bacteria];
-	#pragma omp parallel for
+#pragma omp parallel for schedule(dynamic, 2)
 	for (int i = 0; i < number_bacteria; i++)
 	{
 		printf("load %d of %d from %d\n", i + 1, number_bacteria, omp_get_thread_num());
 		b[i] = new Bacteria(bacteria_name[i]);
 	}
-
-	// auto start = std::chrono::high_resolution_clock::now();
+	auto end = std::chrono::high_resolution_clock::now();
+	std::chrono::duration<double> elapsed = end - start;
+	std::cout << "Bacteria creation time elapsed: " << elapsed.count() << " seconds\n";
 
 	// #pragma omp parallel for schedule(dynamic, 2)
 	for (int i = 0; i < number_bacteria - 1; i++)
-		#pragma omp parallel for schedule(dynamic, 2)
+#pragma omp parallel for schedule(dynamic, 2)
 		for (int j = i + 1; j < number_bacteria; j++)
 		{
 			printf("%2d %2d -> ", i, j);
