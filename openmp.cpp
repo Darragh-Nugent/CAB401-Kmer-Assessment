@@ -4,30 +4,32 @@
 #include <time.h>
 #include <math.h>
 #include <omp.h>
+#include <chrono>
+#include <iostream>
 
 int number_bacteria;
-char** bacteria_name;
+char **bacteria_name;
 long M_6, M_5, M_4;
-short code[27] = { 0, 2, 1, 2, 3, 4, 5, 6, 7, -1, 8, 9, 10, 11, -1, 12, 13, 14, 15, 16, 1, 17, 18, 5, 19, 3};
-#define encode(ch)		code[ch-'A']
-#define LEN				6
-#define AA_NUMBER		20
-#define	EPSILON			1e-010
+short code[27] = {0, 2, 1, 2, 3, 4, 5, 6, 7, -1, 8, 9, 10, 11, -1, 12, 13, 14, 15, 16, 1, 17, 18, 5, 19, 3};
+#define encode(ch) code[ch - 'A']
+#define LEN 6
+#define AA_NUMBER 20
+#define EPSILON 1e-010
 
 void Init()
 {
 	M_4 = 1;
-	for (int i=0; i<LEN-2; i++)	// M_4 = AA_NUMBER ^ (LEN-2);
-		M_4 *= AA_NUMBER; 
-	M_5 = M_4 * AA_NUMBER;		// M_5 = AA_NUMBER ^ (LEN-1);
-	M_6  = M_5 *AA_NUMBER;			// M_6  = AA_NUMBER ^ (LEN);
+	for (int i = 0; i < LEN - 2; i++) // M_4 = AA_NUMBER ^ (LEN-2);
+		M_4 *= AA_NUMBER;
+	M_5 = M_4 * AA_NUMBER; // M_5 = AA_NUMBER ^ (LEN-1);
+	M_6 = M_5 * AA_NUMBER; // M_6  = AA_NUMBER ^ (LEN);
 }
 
 class Bacteria
 {
 private:
-	long* mers_6;
-	long* mers_5;
+	long *mers_6;
+	long *mers_5;
 	long mers_1[AA_NUMBER];
 	long indexs;
 	long total_mers_6;
@@ -36,8 +38,8 @@ private:
 
 	void InitVectors()
 	{
-		mers_6 = new long [M_6];
-		mers_5 = new long [M_5];
+		mers_6 = new long[M_6];
+		mers_5 = new long[M_5];
 		memset(mers_6, 0, M_6 * sizeof(long));
 		memset(mers_5, 0, M_5 * sizeof(long));
 		memset(mers_1, 0, AA_NUMBER * sizeof(long));
@@ -46,11 +48,11 @@ private:
 		complement = 0;
 	}
 
-	void init_buffer(char* buffer)
+	void init_buffer(char *buffer)
 	{
-		complement++; 
+		complement++;
 		indexs = 0;
-		for (int i=0; i<LEN-1; i++)
+		for (int i = 0; i < LEN - 1; i++)
 		{
 			short enc = encode(buffer[i]);
 			mers_1[enc]++;
@@ -74,13 +76,14 @@ private:
 
 public:
 	long count;
-	double* sig_t_vec;
+	double *sig_t_vec;
 	long *sig_t_indx_vec;
 
-	Bacteria(char* filename)
+	Bacteria(char *filename)
 	{
-		FILE* bacteria_file = fopen(filename, "r");
-		if (bacteria_file == NULL) {
+		FILE *bacteria_file = fopen(filename, "r");
+		if (bacteria_file == NULL)
+		{
 			fprintf(stderr, "Error: failed to open file %s\n", filename);
 			exit(1);
 		}
@@ -92,10 +95,11 @@ public:
 		{
 			if (ch == '>')
 			{
-				while (fgetc(bacteria_file) != '\n'); // skip rest of line
+				while (fgetc(bacteria_file) != '\n')
+					; // skip rest of line
 
-				char buffer[LEN-1];
-				fread(buffer, sizeof(char), LEN-1, bacteria_file);
+				char buffer[LEN - 1];
+				fread(buffer, sizeof(char), LEN - 1, bacteria_file);
 				init_buffer(buffer);
 			}
 			else if (ch != '\n' && ch != '\r')
@@ -110,25 +114,25 @@ public:
 		long i_div_M1 = 0;
 
 		double one_l_div_total[AA_NUMBER];
-		for (int i=0; i<AA_NUMBER; i++)
+		for (int i = 0; i < AA_NUMBER; i++)
 			one_l_div_total[i] = (double)mers_1[i] / total_mers_1;
-		
-		double* mers_5_div_total = new double[M_5];
-		for (int i=0; i<M_5; i++)
+
+		double *mers_5_div_total = new double[M_5];
+		for (int i = 0; i < M_5; i++)
 			mers_5_div_total[i] = (double)mers_5[i] / total_plus_complement;
 
 		count = 0;
-		double* t = new double[M_6];
+		double *t = new double[M_6];
 
-		for(long i=0; i<M_6; i++)
+		for (long i = 0; i < M_6; i++)
 		{
 			double p1 = mers_5_div_total[i_div_aa_number];
 			double p2 = one_l_div_total[i_mod_aa_number];
 			double p3 = mers_5_div_total[i_mod_M1];
 			double p4 = one_l_div_total[i_div_M1];
-			double stochastic =  (p1 * p2 + p3 * p4) * total_div_2;
+			double stochastic = (p1 * p2 + p3 * p4) * total_div_2;
 
-			if (i_mod_aa_number == AA_NUMBER-1)
+			if (i_mod_aa_number == AA_NUMBER - 1)
 			{
 				i_mod_aa_number = 0;
 				i_div_aa_number++;
@@ -136,7 +140,7 @@ public:
 			else
 				i_mod_aa_number++;
 
-			if (i_mod_M1 == M_5-1)
+			if (i_mod_M1 == M_5 - 1)
 			{
 				i_mod_M1 = 0;
 				i_div_M1++;
@@ -144,7 +148,7 @@ public:
 			else
 				i_mod_M1++;
 
-			if (stochastic > EPSILON) 
+			if (stochastic > EPSILON)
 			{
 				t[i] = (mers_6[i] - stochastic) / stochastic;
 				count++;
@@ -152,7 +156,7 @@ public:
 			else
 				t[i] = 0;
 		}
-		
+
 		delete mers_5_div_total;
 		delete mers_6;
 		delete mers_5;
@@ -161,7 +165,7 @@ public:
 		sig_t_indx_vec = new long[count];
 
 		int pos = 0;
-		for (long i=0; i<M_6; i++)
+		for (long i = 0; i < M_6; i++)
 		{
 			if (t[i] != 0)
 			{
@@ -172,22 +176,23 @@ public:
 		}
 		delete t;
 
-		fclose (bacteria_file);
+		fclose(bacteria_file);
 	}
 };
 
-void ReadInputFile(const char* input_name)
+void ReadInputFile(const char *input_name)
 {
-	FILE* input_file = fopen(input_name, "r");
-	if (input_file == NULL) {
+	FILE *input_file = fopen(input_name, "r");
+	if (input_file == NULL)
+	{
 		fprintf(stderr, "Error: failed to open file %s\n", input_name);
 		exit(1);
 	}
 
 	fscanf(input_file, "%d", &number_bacteria);
-	bacteria_name = new char*[number_bacteria];
+	bacteria_name = new char *[number_bacteria];
 
-	for(long i=0;i<number_bacteria;i++)
+	for (long i = 0; i < number_bacteria; i++)
 	{
 		char name[10];
 		fscanf(input_file, "%s", name);
@@ -197,11 +202,11 @@ void ReadInputFile(const char* input_name)
 	fclose(input_file);
 }
 
-double CompareBacteria(Bacteria* b1, Bacteria* b2)
+double CompareBacteria(Bacteria *b1, Bacteria *b2)
 {
 	double correlation = 0;
-	double vector_len1=0;
-	double vector_len2=0;
+	double vector_len1 = 0;
+	double vector_len2 = 0;
 	long p1 = 0;
 	long p2 = 0;
 	while (p1 < b1->count && p2 < b2->count)
@@ -247,35 +252,42 @@ double CompareBacteria(Bacteria* b1, Bacteria* b2)
 
 void CompareAllBacteria()
 {
-   Bacteria** b = new Bacteria*[number_bacteria];
-   #pragma omp parallel for
-   for(int i=0; i<number_bacteria; i++)
+	Bacteria **b = new Bacteria *[number_bacteria];
+	#pragma omp parallel for
+	for (int i = 0; i < number_bacteria; i++)
 	{
-		printf("load %d of %d from %d\n", i+1, number_bacteria, omp_get_thread_num());
+		printf("load %d of %d from %d\n", i + 1, number_bacteria, omp_get_thread_num());
 		b[i] = new Bacteria(bacteria_name[i]);
 	}
 
-   #pragma omp parallel for schedule(dynamic, 4)
-   for(int i=0; i<number_bacteria-1; i++)
-		for(int j=i+1; j<number_bacteria; j++)
+	// auto start = std::chrono::high_resolution_clock::now();
+
+	// #pragma omp parallel for schedule(dynamic, 2)
+	for (int i = 0; i < number_bacteria - 1; i++)
+		#pragma omp parallel for schedule(dynamic, 2)
+		for (int j = i + 1; j < number_bacteria; j++)
 		{
 			printf("%2d %2d -> ", i, j);
 			double correlation = CompareBacteria(b[i], b[j]);
 			printf("%.20lf from %d\n", correlation, omp_get_thread_num());
 		}
+	// auto end = std::chrono::high_resolution_clock::now();
+	// std::chrono::duration<double> elapsed = end - start;
+	// std::cout << "Comparision Time elapsed: " << elapsed.count() << " seconds\n";
 }
 
-int main(int argc,char * argv[])
+int main(int argc, char *argv[])
 {
-	time_t t1 = time(NULL);
+	auto start = std::chrono::high_resolution_clock::now();
 
-	omp_set_num_threads(5);
+	omp_set_num_threads(8);
 
 	Init();
 	ReadInputFile("list.txt");
 	CompareAllBacteria();
 
-	time_t t2 = time(NULL);
-	printf("time elapsed: %ld seconds\n", t2 - t1); 
+	auto end = std::chrono::high_resolution_clock::now();
+	std::chrono::duration<double> elapsed = end - start;
+	std::cout << "Time elapsed: " << elapsed.count() << " seconds\n";
 	return 0;
 }
