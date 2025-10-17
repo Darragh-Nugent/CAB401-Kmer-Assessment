@@ -242,7 +242,7 @@ double CompareBacteria(Bacteria *b1, Bacteria *b2)
 void CompareAllBacteria()
 {
    Bacteria** b = new Bacteria*[number_bacteria];
-   #pragma omp parallel for schedule(static)
+   #pragma omp parallel for schedule(dynamic)
    for(int i=0; i<number_bacteria; i++)
 	{
 		printf("load %d of %d from %d\n", i+1, number_bacteria, omp_get_thread_num());
@@ -264,7 +264,7 @@ int main(int argc,char * argv[])
 {
 	time_t t1 = time(NULL);
 
-	omp_set_num_threads(4);
+	omp_set_num_threads(8);
 
 	Init();
 	ReadInputFile("list.txt");
