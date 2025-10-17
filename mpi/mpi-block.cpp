@@ -6,6 +6,7 @@
 #include <mpi.h>
 #include <chrono>
 #include <iostream>
+#include <algorithm>
 
 int rank, size;
 const int tag_count = 1;
@@ -265,36 +266,38 @@ double CompareBacteria(BacteriaSummary *b1, BacteriaSummary *b2)
 
 void RetrieveBacteriaInfo(int *all_counts, Bacteria **local_b, double **all_sig_t_vec, long **all_sig_t_indx_vec)
 {
-    for (int i = 0; i < number_bacteria; i++)
-    {
-        int owner_rank = i % size;
+	int block_size = (number_bacteria + size - 1) / size;
 
-        if (rank == 0)
-        {
-            if (owner_rank == 0)
-            {
-                all_counts[i] = local_b[i]->count;
-                all_sig_t_vec[i] = local_b[i]->sig_t_vec;
-                all_sig_t_indx_vec[i] = local_b[i]->sig_t_indx_vec;
-            }
-            else
-            {
-                MPI_Recv(&all_counts[i], 1, MPI_INT, owner_rank, tag_count, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+	for (int i = 0; i < number_bacteria; i++)
+	{
+		int owner_rank = i / block_size;
 
-                all_sig_t_vec[i] = new double[all_counts[i]];
-                MPI_Recv(all_sig_t_vec[i], all_counts[i], MPI_DOUBLE, owner_rank, tag_vec, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+		if (rank == 0)
+		{
+			if (owner_rank == 0)
+			{
+				all_counts[i] = local_b[i]->count;
+				all_sig_t_vec[i] = local_b[i]->sig_t_vec;
+				all_sig_t_indx_vec[i] = local_b[i]->sig_t_indx_vec;
+			}
+			else
+			{
+				MPI_Recv(&all_counts[i], 1, MPI_INT, owner_rank, tag_count, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
-                all_sig_t_indx_vec[i] = new long[all_counts[i]];
-                MPI_Recv(all_sig_t_indx_vec[i], all_counts[i], MPI_LONG, owner_rank, tag_indx, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-            }
-        }
-        else if (rank == owner_rank)
-        {
-            MPI_Send(&local_b[i]->count, 1, MPI_INT, 0, tag_count, MPI_COMM_WORLD);
-            MPI_Send(local_b[i]->sig_t_vec, local_b[i]->count, MPI_DOUBLE, 0, tag_vec, MPI_COMM_WORLD);
-            MPI_Send(local_b[i]->sig_t_indx_vec, local_b[i]->count, MPI_LONG, 0, tag_indx, MPI_COMM_WORLD);
-        }
-    }
+				all_sig_t_vec[i] = new double[all_counts[i]];
+				MPI_Recv(all_sig_t_vec[i], all_counts[i], MPI_DOUBLE, owner_rank, tag_vec, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+
+				all_sig_t_indx_vec[i] = new long[all_counts[i]];
+				MPI_Recv(all_sig_t_indx_vec[i], all_counts[i], MPI_LONG, owner_rank, tag_indx, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+			}
+		}
+		else if (rank == owner_rank)
+		{
+			MPI_Send(&local_b[i]->count, 1, MPI_INT, 0, tag_count, MPI_COMM_WORLD);
+			MPI_Send(local_b[i]->sig_t_vec, local_b[i]->count, MPI_DOUBLE, 0, tag_vec, MPI_COMM_WORLD);
+			MPI_Send(local_b[i]->sig_t_indx_vec, local_b[i]->count, MPI_LONG, 0, tag_indx, MPI_COMM_WORLD);
+		}
+	}
 }
 
 void CreateSummaries(int *all_counts, double **all_sig_t_vec, long **all_sig_t_indx_vec, BacteriaSummary **summaries)
@@ -342,11 +345,13 @@ void CompareAllBacteria()
 	double **all_sig_t_vec = new double *[number_bacteria];
 	long **all_sig_t_indx_vec = new long *[number_bacteria];
 
-	auto start = std::chrono::high_resolution_clock::now();
+	auto time_start = std::chrono::high_resolution_clock::now();
 
-	for (int i = 0; i < number_bacteria; i++)
+	int block_size = (number_bacteria + size - 1) / size;
+	int start = rank * block_size;
+	for (int i = start; i < number_bacteria; i++)
 	{
-		if (i % size == rank)
+		if (i >= start && i < start + block_size)
 		{
 			printf("load %d of %d\n", i + 1, number_bacteria);
 			local_b[i] = new Bacteria(&bacteria_name[i * NAME_SIZE]);
@@ -358,11 +363,11 @@ void CompareAllBacteria()
 	}
 
 	auto end = std::chrono::high_resolution_clock::now();
-	std::chrono::duration<double> elapsed = end - start;
+	std::chrono::duration<double> elapsed = end - time_start;
 	std::cout << "Bacteria creation time elapsed: " << elapsed.count() << " seconds\n";
 
-    RetrieveBacteriaInfo(all_counts, local_b, all_sig_t_vec, all_sig_t_indx_vec);
-    CreateSummaries(all_counts, all_sig_t_vec, all_sig_t_indx_vec, summaries);
+	RetrieveBacteriaInfo(all_counts, local_b, all_sig_t_vec, all_sig_t_indx_vec);
+	CreateSummaries(all_counts, all_sig_t_vec, all_sig_t_indx_vec, summaries);
 
 	for (int i = rank; i < number_bacteria - 1; i += size)
 	{
