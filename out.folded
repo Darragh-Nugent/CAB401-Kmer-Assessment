@@ -1,6 +1,0 @@
-sequential;_start;__libc_start_main@@GLIBC_2.34;__libc_start_call_main;main;CompareAllBacteria;Bacteria::Bacteria 39314860693
-sequential;_start;__libc_start_main@@GLIBC_2.34;__libc_start_call_main;main;CompareAllBacteria;Bacteria::Bacteria;[unknown] 2803916428
-sequential;_start;__libc_start_main@@GLIBC_2.34;__libc_start_call_main;main;CompareAllBacteria;Bacteria::Bacteria;_IO_fread 16538456
-sequential;_start;__libc_start_main@@GLIBC_2.34;__libc_start_call_main;main;CompareAllBacteria;CompareBacteria 30835662042
-sequential;_start;__libc_start_main@@GLIBC_2.34;__libc_start_call_main;main;CompareAllBacteria;__memset_avx2_unaligned_erms 2390225275
-sequential;_start;__libc_start_main@@GLIBC_2.34;__libc_start_call_main;main;CompareAllBacteria;__memset_avx2_unaligned_erms;[unknown] 6220125852

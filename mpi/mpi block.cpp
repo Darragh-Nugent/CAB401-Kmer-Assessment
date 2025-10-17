@@ -210,7 +210,7 @@ void ReadInputFile(const char *input_name)
 	{
 		char name[10];
 		fscanf(input_file, "%s", name);
-		snprintf(&bacteria_name[i * NAME_SIZE], NAME_SIZE, "data/%s.faa", name);
+		snprintf(&bacteria_name[i * NAME_SIZE], NAME_SIZE, "../data/%s.faa", name);
 	}
 	fclose(input_file);
 }
@@ -389,7 +389,7 @@ int main(int argc, char *argv[])
 	printf("MPI started with %d processes\n", size);
 	if (rank == 0)
 	{
-		ReadInputFile("list.txt");
+		ReadInputFile("../list.txt");
 	}
 
 	MPI_Bcast(&number_bacteria, 1, MPI_INT, 0, MPI_COMM_WORLD);
