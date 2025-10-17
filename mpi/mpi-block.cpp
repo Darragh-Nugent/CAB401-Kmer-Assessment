@@ -13,7 +13,7 @@ const int tag_count = 1;
 const int tag_vec = 2;
 const int tag_indx = 3;
 
-int NAME_SIZE = 20;
+int NAME_SIZE = 30;
 
 int number_bacteria;
 char *bacteria_name;
