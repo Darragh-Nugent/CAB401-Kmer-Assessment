@@ -428,7 +428,7 @@ void CompareAllBacteria()
 
     auto end = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> elapsed = end - start;
-    std::cout << "Bacteria creation time elapsed: " << elapsed.count() << " seconds\n";
+    if (rank == 0) std::cout << "Bacteria creation time elapsed: " << elapsed.count() << " seconds\n";
 
     BacteriaSummary **summaries = new BacteriaSummary *[number_bacteria];
 

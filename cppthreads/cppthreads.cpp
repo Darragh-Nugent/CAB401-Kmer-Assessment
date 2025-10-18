@@ -3,20 +3,15 @@
 #include <string.h>
 #include <time.h>
 #include <math.h>
-#include <mpi.h>
-#include <chrono>
 #include <iostream>
-#include <algorithm>
+#include <chrono>
+#include <thread>
+#include <vector>
 
-int rank, size;
-const int tag_count = 1;
-const int tag_vec = 2;
-const int tag_indx = 3;
-
-int NAME_SIZE = 30;
+int thread_count;
 
 int number_bacteria;
-char *bacteria_name;
+char **bacteria_name;
 long M_6, M_5, M_4;
 short code[27] = {0, 2, 1, 2, 3, 4, 5, 6, 7, -1, 8, 9, 10, 11, -1, 12, 13, 14, 15, 16, 1, 17, 18, 5, 19, 3};
 #define encode(ch) code[ch - 'A']
@@ -32,13 +27,6 @@ void Init()
 	M_5 = M_4 * AA_NUMBER; // M_5 = AA_NUMBER ^ (LEN-1);
 	M_6 = M_5 * AA_NUMBER; // M_6  = AA_NUMBER ^ (LEN);
 }
-
-struct BacteriaSummary
-{
-	int count;
-	double *sig_t_vec;
-	long *sig_t_indx_vec;
-};
 
 class Bacteria
 {
@@ -205,18 +193,19 @@ void ReadInputFile(const char *input_name)
 	}
 
 	fscanf(input_file, "%d", &number_bacteria);
-	bacteria_name = new char[number_bacteria * NAME_SIZE];
+	bacteria_name = new char *[number_bacteria];
 
 	for (long i = 0; i < number_bacteria; i++)
 	{
 		char name[10];
 		fscanf(input_file, "%s", name);
-		snprintf(&bacteria_name[i * NAME_SIZE], NAME_SIZE, "../data/%s.faa", name);
+		bacteria_name[i] = new char[30];
+		snprintf(bacteria_name[i], 30, "../data/%s.faa", name);
 	}
 	fclose(input_file);
 }
 
-double CompareBacteria(BacteriaSummary *b1, BacteriaSummary *b2)
+double CompareBacteria(Bacteria *b1, Bacteria *b2)
 {
 	double correlation = 0;
 	double vector_len1 = 0;
@@ -264,154 +253,74 @@ double CompareBacteria(BacteriaSummary *b1, BacteriaSummary *b2)
 	return correlation / (sqrt(vector_len1) * sqrt(vector_len2));
 }
 
-void RetrieveBacteriaInfo(int *all_counts, Bacteria **local_b, double **all_sig_t_vec, long **all_sig_t_indx_vec)
+void CreateBacteria(Bacteria **b, int thread_id, int start, int end)
 {
-	int block_size = (number_bacteria + size - 1) / size;
-
-	for (int i = 0; i < number_bacteria; i++)
+	for (int i = start; i < end; i++)
 	{
-		int owner_rank = i / block_size;
-
-		if (rank == 0)
-		{
-			if (owner_rank == 0)
-			{
-				all_counts[i] = local_b[i]->count;
-				all_sig_t_vec[i] = local_b[i]->sig_t_vec;
-				all_sig_t_indx_vec[i] = local_b[i]->sig_t_indx_vec;
-			}
-			else
-			{
-				MPI_Recv(&all_counts[i], 1, MPI_INT, owner_rank, tag_count, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-
-				all_sig_t_vec[i] = new double[all_counts[i]];
-				MPI_Recv(all_sig_t_vec[i], all_counts[i], MPI_DOUBLE, owner_rank, tag_vec, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-
-				all_sig_t_indx_vec[i] = new long[all_counts[i]];
-				MPI_Recv(all_sig_t_indx_vec[i], all_counts[i], MPI_LONG, owner_rank, tag_indx, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-			}
-		}
-		else if (rank == owner_rank)
-		{
-			MPI_Send(&local_b[i]->count, 1, MPI_INT, 0, tag_count, MPI_COMM_WORLD);
-			MPI_Send(local_b[i]->sig_t_vec, local_b[i]->count, MPI_DOUBLE, 0, tag_vec, MPI_COMM_WORLD);
-			MPI_Send(local_b[i]->sig_t_indx_vec, local_b[i]->count, MPI_LONG, 0, tag_indx, MPI_COMM_WORLD);
-		}
+		printf("thread %d loading bacteria %d of %d\n", thread_id, i + 1, number_bacteria);
+		b[i] = new Bacteria(bacteria_name[i]);
 	}
 }
 
-void CreateSummaries(int *all_counts, double **all_sig_t_vec, long **all_sig_t_indx_vec, BacteriaSummary **summaries)
+void CompareBacteriaThread(Bacteria **b, int thread_id, int start, int end)
 {
-	for (int i = 0; i < number_bacteria; i++)
+	for (int i = start; i < end; i++)
 	{
-		MPI_Bcast(&all_counts[i], 1, MPI_INT, 0, MPI_COMM_WORLD);
-
-		if (rank != 0)
+		for (int j = i + 1; j < number_bacteria; j++)
 		{
-			all_sig_t_vec[i] = new double[all_counts[i]];
-			all_sig_t_indx_vec[i] = new long[all_counts[i]];
+			printf("thread %d: %2d %2d -> ", thread_id, i, j);
+			double correlation = CompareBacteria(b[i], b[j]);
+			printf("%.20lf\n", correlation);
 		}
-
-		MPI_Bcast(all_sig_t_vec[i], all_counts[i], MPI_DOUBLE, 0, MPI_COMM_WORLD);
-		MPI_Bcast(all_sig_t_indx_vec[i], all_counts[i], MPI_LONG, 0, MPI_COMM_WORLD);
-
-		summaries[i] = new BacteriaSummary();
-		summaries[i]->count = all_counts[i];
-		summaries[i]->sig_t_vec = all_sig_t_vec[i];
-		summaries[i]->sig_t_indx_vec = all_sig_t_indx_vec[i];
 	}
-}
-
-void FreeBacteria(BacteriaSummary **summaries, Bacteria **local_b, int *all_counts, double **all_sig_t_vec, long **all_sig_t_indx_vec)
-{
-	for (int i = 0; i < number_bacteria; i++)
-	{
-		delete summaries[i];
-		delete local_b[i];
-	}
-	delete[] summaries;
-	delete[] local_b;
-	delete[] all_counts;
-	delete[] all_sig_t_vec;
-	delete[] all_sig_t_indx_vec;
 }
 
 void CompareAllBacteria()
 {
-	Bacteria **local_b = new Bacteria *[number_bacteria];
-	BacteriaSummary **summaries = new BacteriaSummary *[number_bacteria];
-
-	int *all_counts = new int[number_bacteria];
-	double **all_sig_t_vec = new double *[number_bacteria];
-	long **all_sig_t_indx_vec = new long *[number_bacteria];
-
-	auto time_start = std::chrono::high_resolution_clock::now();
-
-	int block_size = (number_bacteria + size - 1) / size;
-	int start = rank * block_size;
-	for (int i = start; i < number_bacteria; i++)
+	Bacteria **b = new Bacteria *[number_bacteria];
+	std::vector<std::thread> threads;
+	for (int i = 0; i < thread_count; i++)
 	{
-		if (i >= start && i < start + block_size)
-		{
-        printf("Rank %d loading bacteria %d of %d\n", rank, i, number_bacteria);
-			local_b[i] = new Bacteria(&bacteria_name[i * NAME_SIZE]);
-		}
-		else
-		{
-			local_b[i] = nullptr;
-		}
+		int start = i * (number_bacteria / thread_count);
+		int end = (i == thread_count - 1) ? number_bacteria : start + (number_bacteria / thread_count);
+		threads.emplace_back(CreateBacteria, b, i, start, end);
 	}
 
-	MPI_Barrier(MPI_COMM_WORLD);
-
-	auto end = std::chrono::high_resolution_clock::now();
-	std::chrono::duration<double> elapsed = end - time_start;
-	if (rank == 0) std::cout << "Bacteria creation time elapsed: " << elapsed.count() << " seconds\n";
-
-	RetrieveBacteriaInfo(all_counts, local_b, all_sig_t_vec, all_sig_t_indx_vec);
-	CreateSummaries(all_counts, all_sig_t_vec, all_sig_t_indx_vec, summaries);
-
-	for (int i = rank; i < number_bacteria - 1; i += size)
+	for (int i = 0; i < thread_count; i++)
 	{
-		for (int j = i + 1; j < number_bacteria; j++)
-		{
-			printf("Rank %d: %2d %2d -> ", rank, i, j);
-			double correlation = CompareBacteria(summaries[i], summaries[j]);
-			printf("%.20lf\n", correlation);
-		}
+		threads[i].join();
 	}
 
-	FreeBacteria(summaries, local_b, all_counts, all_sig_t_vec, all_sig_t_indx_vec);
+	threads.clear();
+
+	for (int i = 0; i < thread_count; i++)
+	{
+		int start = i * (number_bacteria / thread_count);
+		int end = (i == thread_count - 1) ? number_bacteria : start + (number_bacteria / thread_count);
+		threads.emplace_back(CompareBacteriaThread, b, i, start, end);
+	}
+
+	for (int i = 0; i < thread_count; i++)
+	{
+		threads[i].join();
+	}
+
+	delete[] b;
 }
 
 int main(int argc, char *argv[])
 {
-	auto start = std::chrono::high_resolution_clock::now();
+	time_t t1 = time(NULL);
 
-	MPI_Init(&argc, &argv);
-	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-	MPI_Comm_size(MPI_COMM_WORLD, &size);
+	thread_count = 4;
 
 	Init();
-	printf("MPI started with %d processes\n", size);
-	if (rank == 0)
-	{
-		ReadInputFile("../list.txt");
-	}
-
-	MPI_Bcast(&number_bacteria, 1, MPI_INT, 0, MPI_COMM_WORLD);
-
-	if (rank != 0)
-		bacteria_name = new char[number_bacteria * NAME_SIZE];
-
-	MPI_Bcast(bacteria_name, number_bacteria * NAME_SIZE, MPI_CHAR, 0, MPI_COMM_WORLD);
-	printf("rank %d of %d\n", rank, size);
-
+	ReadInputFile("../list.txt");
+	// std::thread* threads;
+	// CreateThreads(threads);
 	CompareAllBacteria();
 
-	auto end = std::chrono::high_resolution_clock::now();
-	std::chrono::duration<double> elapsed = end - start;
-	std::cout << "Time elapsed: " << elapsed.count() << " seconds\n";
-	MPI_Finalize();
+	time_t t2 = time(NULL);
+	printf("time elapsed: %ld mers_5s\n", t2 - t1);
 	return 0;
 }

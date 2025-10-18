@@ -348,7 +348,7 @@ void CompareAllBacteria()
 	{
 		if (i % size == rank)
 		{
-			printf("load %d of %d\n", i + 1, number_bacteria);
+        	printf("Rank %d loading bacteria %d of %d\n", rank, i, number_bacteria);
 			local_b[i] = new Bacteria(&bacteria_name[i * NAME_SIZE]);
 		}
 		else
@@ -357,9 +357,11 @@ void CompareAllBacteria()
 		}
 	}
 
+	MPI_Barrier(MPI_COMM_WORLD);
+
 	auto end = std::chrono::high_resolution_clock::now();
 	std::chrono::duration<double> elapsed = end - start;
-	std::cout << "Bacteria creation time elapsed: " << elapsed.count() << " seconds\n";
+	if (rank == 0) std::cout << "Bacteria creation time elapsed: " << elapsed.count() << " seconds\n";
 
     RetrieveBacteriaInfo(all_counts, local_b, all_sig_t_vec, all_sig_t_indx_vec);
     CreateSummaries(all_counts, all_sig_t_vec, all_sig_t_indx_vec, summaries);
