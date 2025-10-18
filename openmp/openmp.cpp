@@ -196,8 +196,8 @@ void ReadInputFile(const char *input_name)
 	{
 		char name[10];
 		fscanf(input_file, "%s", name);
-		bacteria_name[i] = new char[20];
-		snprintf(bacteria_name[i], 20, "../data/%s.faa", name);
+		bacteria_name[i] = new char[30];
+		snprintf(bacteria_name[i], 30, "../data/%s.faa", name);
 	}
 	fclose(input_file);
 }
@@ -252,7 +252,7 @@ double CompareBacteria(Bacteria *b1, Bacteria *b2)
 
 void CompareAllBacteria()
 {
-	auto start = std::chrono::high_resolution_clock::now();
+	// auto start = std::chrono::high_resolution_clock::now();
 
 	Bacteria **b = new Bacteria *[number_bacteria];
 #pragma omp parallel for schedule(dynamic, 2)
@@ -261,9 +261,9 @@ void CompareAllBacteria()
 		printf("load %d of %d from %d\n", i + 1, number_bacteria, omp_get_thread_num());
 		b[i] = new Bacteria(bacteria_name[i]);
 	}
-	auto end = std::chrono::high_resolution_clock::now();
-	std::chrono::duration<double> elapsed = end - start;
-	std::cout << "Bacteria creation time elapsed: " << elapsed.count() << " seconds\n";
+	// auto end = std::chrono::high_resolution_clock::now();
+	// std::chrono::duration<double> elapsed = end - start;
+	// std::cout << "Bacteria creation time elapsed: " << elapsed.count() << " seconds\n";
 
 	// #pragma omp parallel for schedule(dynamic, 2)
 	for (int i = 0; i < number_bacteria - 1; i++)

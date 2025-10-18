@@ -3,12 +3,10 @@
 #include <string.h>
 #include <time.h>
 #include <math.h>
-#include <chrono>
-#include <iostream>
 
 int number_bacteria;
 char** bacteria_name;
-long M_6, M_5, M_4;
+long M, M1, M2;
 short code[27] = { 0, 2, 1, 2, 3, 4, 5, 6, 7, -1, 8, 9, 10, 11, -1, 12, 13, 14, 15, 16, 1, 17, 18, 5, 19, 3};
 #define encode(ch)		code[ch-'A']
 #define LEN				6
@@ -17,71 +15,74 @@ short code[27] = { 0, 2, 1, 2, 3, 4, 5, 6, 7, -1, 8, 9, 10, 11, -1, 12, 13, 14, 
 
 void Init()
 {
-	M_4 = 1;
-	for (int i=0; i<LEN-2; i++)	// M_4 = AA_NUMBER ^ (LEN-2);
-		M_4 *= AA_NUMBER; 
-	M_5 = M_4 * AA_NUMBER;		// M_5 = AA_NUMBER ^ (LEN-1);
-	M_6  = M_5 *AA_NUMBER;			// M_6  = AA_NUMBER ^ (LEN);
+	M2 = 1;
+	for (int i=0; i<LEN-2; i++)	// M2 = AA_NUMBER ^ (LEN-2);
+		M2 *= AA_NUMBER; 
+	M1 = M2 * AA_NUMBER;		// M1 = AA_NUMBER ^ (LEN-1);
+	M  = M1 *AA_NUMBER;			// M  = AA_NUMBER ^ (LEN);
 }
 
 class Bacteria
 {
 private:
-	long* mers_6;
-	long* mers_5;
-	long mers_1[AA_NUMBER];
+	long* vector;
+	long* second;
+	long one_l[AA_NUMBER];
 	long indexs;
-	long total_mers_6;
-	long total_mers_1;
+	long total;
+	long total_l;
 	long complement;
 
 	void InitVectors()
 	{
-		mers_6 = new long [M_6];
-		mers_5 = new long [M_5];
-		memset(mers_6, 0, M_6 * sizeof(long));
-		memset(mers_5, 0, M_5 * sizeof(long));
-		memset(mers_1, 0, AA_NUMBER * sizeof(long));
-		total_mers_6 = 0;
-		total_mers_1 = 0;
+		vector = new long [M];
+		second = new long [M1];
+		memset(vector, 0, M * sizeof(long));
+		memset(second, 0, M1 * sizeof(long));
+		memset(one_l, 0, AA_NUMBER * sizeof(long));
+		total = 0;
+		total_l = 0;
 		complement = 0;
 	}
 
 	void init_buffer(char* buffer)
 	{
-		complement++; 
+		complement++;
 		indexs = 0;
 		for (int i=0; i<LEN-1; i++)
 		{
 			short enc = encode(buffer[i]);
-			mers_1[enc]++;
-			total_mers_1++;
+			one_l[enc]++;
+			total_l++;
 			indexs = indexs * AA_NUMBER + enc;
 		}
-		mers_5[indexs]++;
+		second[indexs]++;
 	}
 
 	void cont_buffer(char ch)
 	{
 		short enc = encode(ch);
-		mers_1[enc]++;
-		total_mers_1++;
+		one_l[enc]++;
+		total_l++;
 		long index = indexs * AA_NUMBER + enc;
-		mers_6[index]++;
-		total_mers_6++;
-		indexs = (indexs % M_4) * AA_NUMBER + enc;
-		mers_5[indexs]++;
+		vector[index]++;
+		total++;
+		indexs = (indexs % M2) * AA_NUMBER + enc;
+		second[indexs]++;
 	}
 
 public:
 	long count;
-	double* sig_t_vec;
-	long *sig_t_indx_vec;
+	double* tv;
+	long *ti;
 
 	Bacteria(char* filename)
 	{
-		FILE* bacteria_file = fopen(filename, "r");
-		if (bacteria_file == NULL) {
+		FILE* bacteria_file;
+		errno_t OK = fopen_s(&bacteria_file, filename, "r");
+
+		if (OK != 0)
+		{
 			fprintf(stderr, "Error: failed to open file %s\n", filename);
 			exit(1);
 		}
@@ -99,12 +100,12 @@ public:
 				fread(buffer, sizeof(char), LEN-1, bacteria_file);
 				init_buffer(buffer);
 			}
-			else if (ch != '\n' && ch != '\r')
+			else if (ch != '\n')
 				cont_buffer(ch);
 		}
 
-		long total_plus_complement = total_mers_6 + complement;
-		double total_div_2 = total_mers_6 * 0.5;
+		long total_plus_complement = total + complement;
+		double total_div_2 = total * 0.5;
 		int i_mod_aa_number = 0;
 		int i_div_aa_number = 0;
 		long i_mod_M1 = 0;
@@ -112,20 +113,20 @@ public:
 
 		double one_l_div_total[AA_NUMBER];
 		for (int i=0; i<AA_NUMBER; i++)
-			one_l_div_total[i] = (double)mers_1[i] / total_mers_1;
+			one_l_div_total[i] = (double)one_l[i] / total_l;
 		
-		double* mers_5_div_total = new double[M_5];
-		for (int i=0; i<M_5; i++)
-			mers_5_div_total[i] = (double)mers_5[i] / total_plus_complement;
+		double* second_div_total = new double[M1];
+		for (int i=0; i<M1; i++)
+			second_div_total[i] = (double)second[i] / total_plus_complement;
 
 		count = 0;
-		double* t = new double[M_6];
+		double* t = new double[M];
 
-		for(long i=0; i<M_6; i++)
+		for(long i=0; i<M; i++)
 		{
-			double p1 = mers_5_div_total[i_div_aa_number];
+			double p1 = second_div_total[i_div_aa_number];
 			double p2 = one_l_div_total[i_mod_aa_number];
-			double p3 = mers_5_div_total[i_mod_M1];
+			double p3 = second_div_total[i_mod_M1];
 			double p4 = one_l_div_total[i_div_M1];
 			double stochastic =  (p1 * p2 + p3 * p4) * total_div_2;
 
@@ -137,7 +138,7 @@ public:
 			else
 				i_mod_aa_number++;
 
-			if (i_mod_M1 == M_5-1)
+			if (i_mod_M1 == M1-1)
 			{
 				i_mod_M1 = 0;
 				i_div_M1++;
@@ -147,27 +148,27 @@ public:
 
 			if (stochastic > EPSILON) 
 			{
-				t[i] = (mers_6[i] - stochastic) / stochastic;
+				t[i] = (vector[i] - stochastic) / stochastic;
 				count++;
 			}
 			else
 				t[i] = 0;
 		}
 		
-		delete mers_5_div_total;
-		delete mers_6;
-		delete mers_5;
+		delete second_div_total;
+		delete vector;
+		delete second;
 
-		sig_t_vec = new double[count];
-		sig_t_indx_vec = new long[count];
+		tv = new double[count];
+		ti = new long[count];
 
 		int pos = 0;
-		for (long i=0; i<M_6; i++)
+		for (long i=0; i<M; i++)
 		{
 			if (t[i] != 0)
 			{
-				sig_t_vec[pos] = t[i];
-				sig_t_indx_vec[pos] = i;
+				tv[pos] = t[i];
+				ti[pos] = i;
 				pos++;
 			}
 		}
@@ -179,21 +180,24 @@ public:
 
 void ReadInputFile(const char* input_name)
 {
-	FILE* input_file = fopen(input_name, "r");
-	if (input_file == NULL) {
-		fprintf(stderr, "Error: failed to open file %s\n", input_name);
+	FILE* input_file;
+	errno_t OK = fopen_s(&input_file, input_name, "r");
+
+	if (OK != 0)
+	{
+		fprintf(stderr, "Error: failed to open file %s (Hint: check your working directory)\n", input_name);
 		exit(1);
 	}
 
-	fscanf(input_file, "%d", &number_bacteria);
+	fscanf_s(input_file, "%d", &number_bacteria);
 	bacteria_name = new char*[number_bacteria];
 
 	for(long i=0;i<number_bacteria;i++)
 	{
 		char name[10];
-		fscanf(input_file, "%s", name);
-		bacteria_name[i] = new char[30];
-		snprintf(bacteria_name[i], 30, "../data/%s.faa", name);
+		fscanf_s(input_file, "%s", name, 10);
+		bacteria_name[i] = new char[20];
+		sprintf_s(bacteria_name[i], 20, "data/%s.faa", name);
 	}
 	fclose(input_file);
 }
@@ -207,24 +211,24 @@ double CompareBacteria(Bacteria* b1, Bacteria* b2)
 	long p2 = 0;
 	while (p1 < b1->count && p2 < b2->count)
 	{
-		long n1 = b1->sig_t_indx_vec[p1];
-		long n2 = b2->sig_t_indx_vec[p2];
+		long n1 = b1->ti[p1];
+		long n2 = b2->ti[p2];
 		if (n1 < n2)
 		{
-			double t1 = b1->sig_t_vec[p1];
+			double t1 = b1->tv[p1];
 			vector_len1 += (t1 * t1);
 			p1++;
 		}
 		else if (n2 < n1)
 		{
-			double t2 = b2->sig_t_vec[p2];
+			double t2 = b2->tv[p2];
 			p2++;
 			vector_len2 += (t2 * t2);
 		}
 		else
 		{
-			double t1 = b1->sig_t_vec[p1++];
-			double t2 = b2->sig_t_vec[p2++];
+			double t1 = b1->tv[p1++];
+			double t2 = b2->tv[p2++];
 			vector_len1 += (t1 * t1);
 			vector_len2 += (t2 * t2);
 			correlation += t1 * t2;
@@ -232,14 +236,14 @@ double CompareBacteria(Bacteria* b1, Bacteria* b2)
 	}
 	while (p1 < b1->count)
 	{
-		long n1 = b1->sig_t_indx_vec[p1];
-		double t1 = b1->sig_t_vec[p1++];
+		long n1 = b1->ti[p1];
+		double t1 = b1->tv[p1++];
 		vector_len1 += (t1 * t1);
 	}
 	while (p2 < b2->count)
 	{
-		long n2 = b2->sig_t_indx_vec[p2];
-		double t2 = b2->sig_t_vec[p2++];
+		long n2 = b2->ti[p2];
+		double t2 = b2->tv[p2++];
 		vector_len2 += (t2 * t2);
 	}
 
@@ -249,13 +253,13 @@ double CompareBacteria(Bacteria* b1, Bacteria* b2)
 void CompareAllBacteria()
 {
 	Bacteria** b = new Bacteria*[number_bacteria];
-   for(int i=0; i<number_bacteria; i++)
+    for(int i=0; i<number_bacteria; i++)
 	{
 		printf("load %d of %d\n", i+1, number_bacteria);
 		b[i] = new Bacteria(bacteria_name[i]);
 	}
 
-   for(int i=0; i<number_bacteria-1; i++)
+    for(int i=0; i<number_bacteria-1; i++)
 		for(int j=i+1; j<number_bacteria; j++)
 		{
 			printf("%2d %2d -> ", i, j);
@@ -266,14 +270,13 @@ void CompareAllBacteria()
 
 int main(int argc,char * argv[])
 {
-	auto start = std::chrono::high_resolution_clock::now();
+	time_t t1 = time(NULL);
 
 	Init();
-	ReadInputFile("../list.txt");
+	ReadInputFile("list.txt");
 	CompareAllBacteria();
 
-	auto end = std::chrono::high_resolution_clock::now();
-	std::chrono::duration<double> elapsed = end - start;
-	std::cout << "Time elapsed: " << elapsed.count() << " seconds\n";
+	time_t t2 = time(NULL);
+	printf("time elapsed: %lld seconds\n", t2 - t1); 
 	return 0;
 }

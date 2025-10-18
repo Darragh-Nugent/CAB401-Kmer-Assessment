@@ -324,17 +324,27 @@ void CreateSummaries(int *all_counts, double **all_sig_t_vec, long **all_sig_t_i
 
 void FreeBacteria(BacteriaSummary **summaries, Bacteria **local_b, int *all_counts, double **all_sig_t_vec, long **all_sig_t_indx_vec)
 {
-	for (int i = 0; i < number_bacteria; i++)
-	{
-		delete summaries[i];
-		delete local_b[i];
-	}
-	delete[] summaries;
-	delete[] local_b;
-	delete[] all_counts;
-	delete[] all_sig_t_vec;
-	delete[] all_sig_t_indx_vec;
+    for (int i = 0; i < number_bacteria; i++)
+    {
+        delete summaries[i];
+        if (local_b[i])
+            delete local_b[i];
+    }
+
+    delete[] summaries;
+    delete[] local_b;
+    delete[] all_counts;
+
+    for (int i = 0; i < number_bacteria; i++)
+    {
+        delete[] all_sig_t_vec[i];
+        delete[] all_sig_t_indx_vec[i];
+    }
+
+    delete[] all_sig_t_vec;
+    delete[] all_sig_t_indx_vec;
 }
+
 
 void CompareAllBacteria()
 {
@@ -345,7 +355,7 @@ void CompareAllBacteria()
 	double **all_sig_t_vec = new double *[number_bacteria];
 	long **all_sig_t_indx_vec = new long *[number_bacteria];
 
-	auto time_start = std::chrono::high_resolution_clock::now();
+	// auto time_start = std::chrono::high_resolution_clock::now();
 
 	int block_size = (number_bacteria + size - 1) / size;
 	int start = rank * block_size;
@@ -364,9 +374,9 @@ void CompareAllBacteria()
 
 	MPI_Barrier(MPI_COMM_WORLD);
 
-	auto end = std::chrono::high_resolution_clock::now();
-	std::chrono::duration<double> elapsed = end - time_start;
-	if (rank == 0) std::cout << "Bacteria creation time elapsed: " << elapsed.count() << " seconds\n";
+	// auto end = std::chrono::high_resolution_clock::now();
+	// std::chrono::duration<double> elapsed = end - time_start;
+	// if (rank == 0) std::cout << "Bacteria creation time elapsed: " << elapsed.count() << " seconds\n";
 
 	RetrieveBacteriaInfo(all_counts, local_b, all_sig_t_vec, all_sig_t_indx_vec);
 	CreateSummaries(all_counts, all_sig_t_vec, all_sig_t_indx_vec, summaries);
@@ -381,7 +391,7 @@ void CompareAllBacteria()
 		}
 	}
 
-	FreeBacteria(summaries, local_b, all_counts, all_sig_t_vec, all_sig_t_indx_vec);
+	// FreeBacteria(summaries, local_b, all_counts, all_sig_t_vec, all_sig_t_indx_vec);
 }
 
 int main(int argc, char *argv[])
