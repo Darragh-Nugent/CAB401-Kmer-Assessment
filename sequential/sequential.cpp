@@ -35,6 +35,7 @@ private:
 	long total_mers_1;
 	long complement;
 
+	__attribute__((noinline))
 	void InitVectors()
 	{
 		mers_6 = new long [M_6];
@@ -176,7 +177,7 @@ public:
 		fclose (bacteria_file);
 	}
 };
-
+__attribute__((noinline))
 void ReadInputFile(const char* input_name)
 {
 	FILE* input_file = fopen(input_name, "r");
@@ -197,7 +198,7 @@ void ReadInputFile(const char* input_name)
 	}
 	fclose(input_file);
 }
-
+__attribute__((noinline))
 double CompareBacteria(Bacteria* b1, Bacteria* b2)
 {
 	double correlation = 0;

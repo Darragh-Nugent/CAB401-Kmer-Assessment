@@ -152,8 +152,8 @@ void ReadInputFile(const char* input_name)
 	{
 		char name[10];
 		fscanf(input_file, "%s", name);
-		bacteria_name[i] = new char[20];
-		snprintf(bacteria_name[i], 20, "data/%s.faa", name);
+		bacteria_name[i] = new char[30];
+		snprintf(bacteria_name[i], 30, "../data/%s.faa", name);
 	}
 	fclose(input_file);
 }
@@ -210,7 +210,7 @@ int main(int argc, char* argv[])
 	time_t t1 = time(NULL);
 
 	Init();
-	ReadInputFile("list.txt");
+	ReadInputFile("../list.txt");
 	CompareAllBacteria();
 
 	time_t t2 = time(NULL);
