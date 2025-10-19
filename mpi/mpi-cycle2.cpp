@@ -375,7 +375,7 @@ void CompareAllBacteria()
 	CreateSummaries(all_counts, all_sig_t_vec, all_sig_t_indx_vec, summaries);
  	
 	auto time_start = std::chrono::high_resolution_clock::now();
-	for (int i = start; i < start + block_size; i++)
+	for (int i = rank; i < number_bacteria - 1; i += size)
 	{
 		for (int j = i + 1; j < number_bacteria; j++)
 		{
