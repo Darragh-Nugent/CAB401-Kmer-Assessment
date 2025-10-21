@@ -1,3 +1,5 @@
+using namespace std;
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -6,7 +8,11 @@
 #include <iostream>
 #include <chrono>
 #include <thread>
-#include <vector>
+#include <condition_variable>
+#include <functional>
+#include <mutex>
+#include <queue>
+#include <atomic>
 
 int thread_count;
 
@@ -18,6 +24,19 @@ short code[27] = {0, 2, 1, 2, 3, 4, 5, 6, 7, -1, 8, 9, 10, 11, -1, 12, 13, 14, 1
 #define LEN 6
 #define AA_NUMBER 20
 #define EPSILON 1e-010
+
+vector<thread> threads;
+queue<function<void()>> tasks;
+
+mutex queue_mutex;
+mutex task_done_mutex;
+
+condition_variable queue_cv;
+condition_variable task_done_cv;
+
+std::atomic<int> tasks_remaining = 0;
+
+bool stop = false;
 
 void Init()
 {
@@ -166,8 +185,9 @@ public:
 			}
 		}
 
-		delete mers_6;
-		delete mers_5;
+		delete[] mers_6;
+		delete[] mers_5;
+        delete mers_5_div_total;
 
 		fclose(bacteria_file);
 	}
@@ -243,88 +263,102 @@ double CompareBacteria(Bacteria *b1, Bacteria *b2)
 	return correlation / (sqrt(vector_len1) * sqrt(vector_len2));
 }
 
-void CreateBacteria(Bacteria **b, int thread_id, int start, int end)
+void enqueue(function<void()> task)
 {
-	for (int i = thread_id; i < number_bacteria; i += thread_count)
 	{
-		printf("thread %d loading bacteria %d of %d\n", thread_id, i + 1, number_bacteria);
-		b[i] = new Bacteria(bacteria_name[i]);
+		std::unique_lock<std::mutex> lock(queue_mutex);
+		tasks.emplace([task]()
+					   {
+            task();
+            tasks_remaining--;
+            task_done_cv.notify_one(); });
+		tasks_remaining++;
+	}
+	queue_cv.notify_one();
+}
+
+void ThreadPool()
+{
+	while (true)
+	{
+		function<void()> task;
+		{
+			std::unique_lock<mutex> lock(queue_mutex);
+			queue_cv.wait(lock, []
+					 { return !tasks.empty() || stop; });
+
+			if (stop && tasks.empty())
+				return;
+
+			task = std::move(tasks.front());
+			tasks.pop();
+		}
+
+		task();
 	}
 }
 
-void CompareBacteriaThread(Bacteria **b, int thread_id, int start, int end)
+void wait_for_all_tasks()
 {
-	for (int i = thread_id; i < number_bacteria; i += thread_count)
-	{
-		for (int j = i + 1; j < number_bacteria; j++)
-		{
-			printf("thread %d: %2d %2d -> ", thread_id, i, j);
-			double correlation = CompareBacteria(b[i], b[j]);
-			printf("%.20lf\n", correlation);
-		}
-	}
+	std::unique_lock<std::mutex> lock(task_done_mutex);
+	task_done_cv.wait(lock, []
+					  { return tasks_remaining == 0; });
 }
 
 void CompareAllBacteria()
 {
 	Bacteria **b = new Bacteria *[number_bacteria];
-	std::vector<std::thread> threads;
+
+	for (int i = 0; i < thread_count; i++)
+		threads.emplace_back(ThreadPool);
+
 	// auto time_start = std::chrono::high_resolution_clock::now();
+	for (int i = 0; i < number_bacteria; i++)
+	{
+		enqueue([b, i]()
+				{
+			printf("loading bacteria %d of %d\n", i + 1, number_bacteria);
+			b[i] = new Bacteria(bacteria_name[i]); });
+	}
+
+    wait_for_all_tasks();
 
 	for (int i = 0; i < number_bacteria; i++)
 	{
-		int chunk_size = (number_bacteria + thread_count - 1) / thread_count;
-		int start = i * chunk_size;
-		int end = std::min(start + chunk_size, number_bacteria);
-		// threads.emplace_back(CreateBacteria, b, i, start, end);
-		printf("loading bacteria %d of %d\n", i + 1, number_bacteria);
-		b[i] = new Bacteria(bacteria_name[i]);
+		enqueue([b, i]()
+				{
+			for (int j = i + 1; j < number_bacteria; j++)
+			{
+				printf("%2d %2d -> ", i, j);
+				double correlation = CompareBacteria(b[i], b[j]);
+				printf("%.20lf\n", correlation);
+			} });
 	}
 
-	// for (int i = 0; i < thread_count; i++)
-	// {
-	// 	threads[i].join();
-	// }
-	// auto end = std::chrono::high_resolution_clock::now();
-	// std::chrono::duration<double> elapsed = end - time_start;
-	// std::cout << "Bacteria creation time elapsed: " << elapsed.count() << " seconds\n";
-
-	// threads.clear();
-
-	auto time_start = std::chrono::high_resolution_clock::now();
-
-	for (int i = 0; i < thread_count; i++)
 	{
-		int chunk_size = (number_bacteria + thread_count - 1) / thread_count;
-		int start = i * chunk_size;
-		int end = std::min(start + chunk_size, number_bacteria);
-		threads.emplace_back(CompareBacteriaThread, b, i, start, end);
+		std::unique_lock<mutex> lock(queue_mutex);
+		stop = true;
 	}
+	queue_cv.notify_all();
 
-	for (int i = 0; i < thread_count; i++)
-	{
-		threads[i].join();
-	}
-	auto end = std::chrono::high_resolution_clock::now();
-	std::chrono::duration<double> elapsed = end - time_start;
-	std::cout << "Bacteria comparison time elapsed: " << elapsed.count() << " seconds\n";
+	for (auto &thread : threads)
+		thread.join();
 
 	delete[] b;
 }
 
 int main(int argc, char *argv[])
 {
-	time_t t1 = time(NULL);
+    auto start = std::chrono::high_resolution_clock::now();
 
-	thread_count = 2;
+    thread_count = 8;
 
-	Init();
-	ReadInputFile("../list.txt");
-	// std::thread* threads;
-	// CreateThreads(threads);
-	CompareAllBacteria();
+    Init();
+    ReadInputFile("../list.txt");
+    CompareAllBacteria();
 
-	time_t t2 = time(NULL);
-	printf("time elapsed: %ld mers_5s\n", t2 - t1);
+    auto end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> elapsed = end - start;
+    std::cout << "Comparision Time elapsed: " << elapsed.count() << " seconds\n";
 	return 0;
 }

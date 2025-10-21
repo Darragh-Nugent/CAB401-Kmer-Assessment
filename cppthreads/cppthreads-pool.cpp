@@ -25,13 +25,13 @@ short code[27] = {0, 2, 1, 2, 3, 4, 5, 6, 7, -1, 8, 9, 10, 11, -1, 12, 13, 14, 1
 #define AA_NUMBER 20
 #define EPSILON 1e-010
 
-vector<thread> threads_;
-queue<function<void()>> tasks_;
+vector<thread> threads;
+queue<function<void()>> tasks;
 
-mutex queue_mutex_;
+mutex queue_mutex;
 mutex task_done_mutex;
 
-condition_variable cv_;
+condition_variable queue_cv;
 condition_variable task_done_cv;
 
 std::atomic<int> tasks_remaining = 0;
@@ -265,32 +265,32 @@ double CompareBacteria(Bacteria *b1, Bacteria *b2)
 void enqueue(function<void()> task)
 {
 	{
-		std::unique_lock<std::mutex> lock(queue_mutex_);
-		tasks_.emplace([task]()
+		std::unique_lock<std::mutex> lock(queue_mutex);
+		tasks.emplace([task]()
 					   {
             task();
             tasks_remaining--;
             task_done_cv.notify_one(); });
 		tasks_remaining++;
 	}
-	cv_.notify_one();
+	queue_cv.notify_one();
 }
 
-void ThreadPoolWorker()
+void ThreadPool()
 {
 	while (true)
 	{
 		function<void()> task;
 		{
-			std::unique_lock<mutex> lock(queue_mutex_);
-			cv_.wait(lock, []
-					 { return !tasks_.empty() || stop; });
+			std::unique_lock<mutex> lock(queue_mutex);
+			queue_cv.wait(lock, []
+					 { return !tasks.empty() || stop; });
 
-			if (stop && tasks_.empty())
+			if (stop && tasks.empty())
 				return;
 
-			task = std::move(tasks_.front());
-			tasks_.pop();
+			task = std::move(tasks.front());
+			tasks.pop();
 		}
 
 		task();
@@ -309,27 +309,27 @@ void CompareAllBacteria()
 	Bacteria **b = new Bacteria *[number_bacteria];
 
 	for (int i = 0; i < thread_count; i++)
-		threads_.emplace_back(ThreadPoolWorker);
+		threads.emplace_back(ThreadPool);
 
-	auto time_start = std::chrono::high_resolution_clock::now();
-	// ThreadPool pool(thread_count);
+	// auto time_start = std::chrono::high_resolution_clock::now();
 	for (int i = 0; i < number_bacteria; i++)
 	{
-		// pool.enqueue([b, i]() {
-		//     printf("loading bacteria %d of %d\n", i + 1, number_bacteria);
-		//     b[i] = new Bacteria(bacteria_name[i]);
-		// });
-		enqueue([b, i]()
-				{
-			printf("loading bacteria %d of %d\n", i + 1, number_bacteria);
-			b[i] = new Bacteria(bacteria_name[i]); });
+		// enqueue([b, i]()
+		// 		{
+		// 	printf("loading bacteria %d of %d\n", i + 1, number_bacteria);
+		// 	b[i] = new Bacteria(bacteria_name[i]); });
+		printf("load %d of %d\n", i + 1, number_bacteria);
+		b[i] = new Bacteria(bacteria_name[i]);
 	}
 
-	wait_for_all_tasks();
+	// wait_for_all_tasks();
 
-	auto end = std::chrono::high_resolution_clock::now();
-	std::chrono::duration<double> elapsed = end - time_start;
-	std::cout << "Bacteria creation time elapsed: " << elapsed.count() << " seconds\n";
+	// auto end = std::chrono::high_resolution_clock::now();
+	// std::chrono::duration<double> elapsed = end - time_start;
+	// std::cout << "Bacteria creation time elapsed: " << elapsed.count() << " seconds\n";
+
+	auto time_start = std::chrono::high_resolution_clock::now();
+
 
 	for (int i = 0; i < number_bacteria; i++)
 	{
@@ -341,15 +341,29 @@ void CompareAllBacteria()
 		//         printf("%.20lf\n", correlation);
 		//     }
 		// });
+		enqueue([b, i]()
+				{
+			for (int j = i + 1; j < number_bacteria; j++)
+			{
+				printf("%2d %2d -> ", i, j);
+				double correlation = CompareBacteria(b[i], b[j]);
+				printf("%.20lf\n", correlation);
+			} });
 	}
+
+	wait_for_all_tasks();
+
+	auto end = std::chrono::high_resolution_clock::now();
+	std::chrono::duration<double> elapsed = end - time_start;
+	std::cout << "Bacteria comparision time elapsed: " << elapsed.count() << " seconds\n";
 
 	{
-		std::unique_lock<mutex> lock(queue_mutex_);
+		std::unique_lock<mutex> lock(queue_mutex);
 		stop = true;
 	}
-	cv_.notify_all();
+	queue_cv.notify_all();
 
-	for (auto &thread : threads_)
+	for (auto &thread : threads)
 		thread.join();
 
 	delete[] b;
@@ -359,7 +373,7 @@ int main(int argc, char *argv[])
 {
 	time_t t1 = time(NULL);
 
-	thread_count = 8;
+	thread_count = 2;
 
 	Init();
 	ReadInputFile("../list.txt");
