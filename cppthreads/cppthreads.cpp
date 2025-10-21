@@ -79,8 +79,11 @@ private:
 
 public:
 	long count;
-	double *sig_t_vec;
-	long *sig_t_indx_vec;
+	// double *sig_t_vec;
+	// long *sig_t_indx_vec;
+
+	std::vector<double> sig_t_vec;
+	std::vector<long> sig_t_indx_vec;
 
 	Bacteria(char *filename)
 	{
@@ -125,7 +128,11 @@ public:
 			mers_5_div_total[i] = (double)mers_5[i] / total_plus_complement;
 
 		count = 0;
-		double *t = new double[M_6];
+
+		// std::map<long, double> t;
+
+		// sig_t_vec = new double[count];
+		// sig_t_indx_vec = new long[count];
 
 		for (long i = 0; i < M_6; i++)
 		{
@@ -153,31 +160,14 @@ public:
 
 			if (stochastic > EPSILON)
 			{
-				t[i] = (mers_6[i] - stochastic) / stochastic;
+				sig_t_vec.push_back((mers_6[i] - stochastic) / stochastic);
+				sig_t_indx_vec.push_back(i);
 				count++;
 			}
-			else
-				t[i] = 0;
 		}
 
-		delete mers_5_div_total;
 		delete mers_6;
 		delete mers_5;
-
-		sig_t_vec = new double[count];
-		sig_t_indx_vec = new long[count];
-
-		int pos = 0;
-		for (long i = 0; i < M_6; i++)
-		{
-			if (t[i] != 0)
-			{
-				sig_t_vec[pos] = t[i];
-				sig_t_indx_vec[pos] = i;
-				pos++;
-			}
-		}
-		delete t;
 
 		fclose(bacteria_file);
 	}
@@ -255,7 +245,7 @@ double CompareBacteria(Bacteria *b1, Bacteria *b2)
 
 void CreateBacteria(Bacteria **b, int thread_id, int start, int end)
 {
-	for (int i = start; i < end; i++)
+	for (int i = thread_id; i < number_bacteria; i += thread_count)
 	{
 		printf("thread %d loading bacteria %d of %d\n", thread_id, i + 1, number_bacteria);
 		b[i] = new Bacteria(bacteria_name[i]);
@@ -279,10 +269,13 @@ void CompareAllBacteria()
 {
 	Bacteria **b = new Bacteria *[number_bacteria];
 	std::vector<std::thread> threads;
+	auto time_start = std::chrono::high_resolution_clock::now();
+
 	for (int i = 0; i < thread_count; i++)
 	{
-		int start = i * (number_bacteria / thread_count);
-		int end = (i == thread_count - 1) ? number_bacteria : start + (number_bacteria / thread_count);
+		int chunk_size = (number_bacteria + thread_count - 1) / thread_count;
+		int start = i * chunk_size;
+		int end = std::min(start + chunk_size, number_bacteria);
 		threads.emplace_back(CreateBacteria, b, i, start, end);
 	}
 
@@ -290,13 +283,22 @@ void CompareAllBacteria()
 	{
 		threads[i].join();
 	}
+	auto end = std::chrono::high_resolution_clock::now();
+	std::chrono::duration<double> elapsed = end - time_start;
+	std::cout << "Bacteria creation time elapsed: " << elapsed.count() << " seconds\n";
+
+	// for (int i = 0; i < thread_count; i++)
+	// {
+	// 	threads[i].join();
+	// }
 
 	threads.clear();
 
 	for (int i = 0; i < thread_count; i++)
 	{
-		int start = i * (number_bacteria / thread_count);
-		int end = (i == thread_count - 1) ? number_bacteria : start + (number_bacteria / thread_count);
+		int chunk_size = (number_bacteria + thread_count - 1) / thread_count;
+		int start = i * chunk_size;
+		int end = std::min(start + chunk_size, number_bacteria);
 		threads.emplace_back(CompareBacteriaThread, b, i, start, end);
 	}
 
@@ -312,7 +314,7 @@ int main(int argc, char *argv[])
 {
 	time_t t1 = time(NULL);
 
-	thread_count = 4;
+	thread_count = 2;
 
 	Init();
 	ReadInputFile("../list.txt");

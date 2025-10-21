@@ -8,23 +8,22 @@
 #include <chrono>
 #include <iostream>
 
-
 int number_bacteria;
-char** bacteria_name;
+char **bacteria_name;
 long M_6, M_5, M_4;
-short code[27] = { 0, 2, 1, 2, 3, 4, 5, 6, 7, -1, 8, 9, 10, 11, -1, 12, 13, 14, 15, 16, 1, 17, 18, 5, 19, 3};
-#define encode(ch)		code[ch-'A']
-#define LEN				6
-#define AA_NUMBER		20
-#define	EPSILON			1e-010
+short code[27] = {0, 2, 1, 2, 3, 4, 5, 6, 7, -1, 8, 9, 10, 11, -1, 12, 13, 14, 15, 16, 1, 17, 18, 5, 19, 3};
+#define encode(ch) code[ch - 'A']
+#define LEN 6
+#define AA_NUMBER 20
+#define EPSILON 1e-010
 
 void Init()
 {
-	M_4 = 1;
-	for (int i=0; i<LEN-2; i++)	// M_4 = AA_NUMBER ^ (LEN-2);
-		M_4 *= AA_NUMBER; 
-	M_5 = M_4 * AA_NUMBER;		// M_5 = AA_NUMBER ^ (LEN-1);
-	M_6  = M_5 *AA_NUMBER;			// M_6  = AA_NUMBER ^ (LEN);
+    M_4 = 1;
+    for (int i = 0; i < LEN - 2; i++) // M_4 = AA_NUMBER ^ (LEN-2);
+        M_4 *= AA_NUMBER;
+    M_5 = M_4 * AA_NUMBER; // M_5 = AA_NUMBER ^ (LEN-1);
+    M_6 = M_5 * AA_NUMBER; // M_6  = AA_NUMBER ^ (LEN);
 }
 
 class Bacteria
@@ -172,25 +171,26 @@ public:
     }
 };
 
-void ReadInputFile(const char* input_name)
+void ReadInputFile(const char *input_name)
 {
-	FILE* input_file = fopen(input_name, "r");
-	if (input_file == NULL) {
-		fprintf(stderr, "Error: failed to open file %s\n", input_name);
-		exit(1);
-	}
+    FILE *input_file = fopen(input_name, "r");
+    if (input_file == NULL)
+    {
+        fprintf(stderr, "Error: failed to open file %s\n", input_name);
+        exit(1);
+    }
 
-	fscanf(input_file, "%d", &number_bacteria);
-	bacteria_name = new char*[number_bacteria];
+    fscanf(input_file, "%d", &number_bacteria);
+    bacteria_name = new char *[number_bacteria];
 
-	for(long i=0;i<number_bacteria;i++)
-	{
-		char name[10];
-		fscanf(input_file, "%s", name);
-		bacteria_name[i] = new char[30];
-		snprintf(bacteria_name[i], 30, "../data/%s.faa", name);
-	}
-	fclose(input_file);
+    for (long i = 0; i < number_bacteria; i++)
+    {
+        char name[10];
+        fscanf(input_file, "%s", name);
+        bacteria_name[i] = new char[30];
+        snprintf(bacteria_name[i], 30, "../data/%s.faa", name);
+    }
+    fclose(input_file);
 }
 
 double CompareBacteria(Bacteria *b1, Bacteria *b2)
@@ -243,37 +243,50 @@ double CompareBacteria(Bacteria *b1, Bacteria *b2)
 
 void CompareAllBacteria()
 {
-   Bacteria** b = new Bacteria*[number_bacteria];
-   #pragma omp parallel for schedule(dynamic)
-   for(int i=0; i<number_bacteria; i++)
-	{
-		printf("load %d of %d from %d\n", i+1, number_bacteria, omp_get_thread_num());
-		b[i] = new Bacteria(bacteria_name[i]);
-	}
+    Bacteria **b = new Bacteria *[number_bacteria];
+    
+    // auto time_start = std::chrono::high_resolution_clock::now();
 
-//    #pragma omp parallel for
-   for(int i=0; i<number_bacteria-1; i++)
-      	#pragma omp parallel for schedule(dynamic, 2)
-		for(int j=i+1; j<number_bacteria; j++)
-		{
-			printf("%2d %2d -> ", i, j);
-			double correlation = CompareBacteria(b[i], b[j]);
-			printf("%.20lf from %d\n", correlation, omp_get_thread_num());
-		}
+    #pragma omp parallel for schedule(dynamic, 2)
+    for (int i = 0; i < number_bacteria; i++)
+    {
+        printf("load %d of %d from %d\n", i + 1, number_bacteria, omp_get_thread_num());
+        b[i] = new Bacteria(bacteria_name[i]);
+    }
+    // auto end = std::chrono::high_resolution_clock::now();
+    // std::chrono::duration<double> elapsed = end - time_start;
+    // std::cout << "Bacteria creation time elapsed: " << elapsed.count() << " seconds\n";
+    // auto time_start = std::chrono::high_resolution_clock::now();
+
+    //    #pragma omp parallel for
+    for (int i = 0; i < number_bacteria - 1; i++)
+    {
+        #pragma omp parallel for schedule(dynamic, 2)
+        for (int j = i + 1; j < number_bacteria; j++)
+        {
+            printf("%2d %2d -> ", i, j);
+            double correlation = CompareBacteria(b[i], b[j]);
+            printf("%.20lf from %d\n", correlation, omp_get_thread_num());
+        }
+    }
+
+    // auto end = std::chrono::high_resolution_clock::now();
+    // std::chrono::duration<double> elapsed = end - time_start;
+    // std::cout << "Bacteria comparision time elapsed: " << elapsed.count() << " seconds\n";
 }
 
-int main(int argc,char * argv[])
+int main(int argc, char *argv[])
 {
-	auto start = std::chrono::high_resolution_clock::now();
+    auto start = std::chrono::high_resolution_clock::now();
 
-	omp_set_num_threads(4);
+    omp_set_num_threads(1);
 
-	Init();
-	ReadInputFile("../list.txt");
-	CompareAllBacteria();
+    Init();
+    ReadInputFile("../list.txt");
+    CompareAllBacteria();
 
-	auto end = std::chrono::high_resolution_clock::now();
-	std::chrono::duration<double> elapsed = end - start;
-	std::cout << "Comparision Time elapsed: " << elapsed.count() << " seconds\n";
-	return 0;
+    auto end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> elapsed = end - start;
+    std::cout << "Comparision Time elapsed: " << elapsed.count() << " seconds\n";
+    return 0;
 }

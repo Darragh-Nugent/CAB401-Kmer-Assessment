@@ -1,3 +1,5 @@
+using namespace std;
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -6,11 +8,11 @@
 #include <iostream>
 #include <chrono>
 #include <thread>
-#include <vector>
 #include <condition_variable>
 #include <functional>
 #include <mutex>
 #include <queue>
+#include <atomic>
 
 int thread_count;
 
@@ -23,105 +25,18 @@ short code[27] = {0, 2, 1, 2, 3, 4, 5, 6, 7, -1, 8, 9, 10, 11, -1, 12, 13, 14, 1
 #define AA_NUMBER 20
 #define EPSILON 1e-010
 
+vector<thread> threads_;
+queue<function<void()>> tasks_;
 
+mutex queue_mutex_;
+mutex task_done_mutex;
 
-using namespace std;
+condition_variable cv_;
+condition_variable task_done_cv;
 
-// Retrieved from https://www.geeksforgeeks.org/cpp/thread-pool-in-cpp/
-class ThreadPool {
-public:
-    // // Constructor to creates a thread pool with given
-    // number of threads
-    ThreadPool(size_t num_threads
-               = thread::hardware_concurrency())
-    {
+std::atomic<int> tasks_remaining = 0;
 
-        // Creating worker threads
-        for (size_t i = 0; i < num_threads; ++i) {
-            threads_.emplace_back([this] {
-                while (true) {
-                    function<void()> task;
-                    // The reason for putting the below code
-                    // here is to unlock the queue before
-                    // executing the task so that other
-                    // threads can perform enqueue tasks
-                    {
-                        // Locking the queue so that data
-                        // can be shared safely
-                        unique_lock<mutex> lock(
-                            queue_mutex_);
-
-                        // Waiting until there is a task to
-                        // execute or the pool is stopped
-                        cv_.wait(lock, [this] {
-                            return !tasks_.empty() || stop_;
-                        });
-
-                        // exit the thread in case the pool
-                        // is stopped and there are no tasks
-                        if (stop_ && tasks_.empty()) {
-                            return;
-                        }
-
-                        // Get the next task from the queue
-                        task = move(tasks_.front());
-                        tasks_.pop();
-                    }
-
-                    task();
-                }
-            });
-        }
-    }
-
-    // Destructor to stop the thread pool
-    ~ThreadPool()
-    {
-        {
-            // Lock the queue to update the stop flag safely
-            unique_lock<mutex> lock(queue_mutex_);
-            stop_ = true;
-        }
-
-        // Notify all threads
-        cv_.notify_all();
-
-        // Joining all worker threads to ensure they have
-        // completed their tasks
-        for (auto& thread : threads_) {
-            thread.join();
-        }
-    }
-
-    // Enqueue task for execution by the thread pool
-    void enqueue(function<void()> task)
-    {
-        {
-            unique_lock<std::mutex> lock(queue_mutex_);
-            tasks_.emplace(move(task));
-        }
-        cv_.notify_one();
-    }
-
-private:
-    // Vector to store worker threads
-    vector<thread> threads_;
-
-    // Queue of tasks
-    queue<function<void()> > tasks_;
-
-    // Mutex to synchronize access to shared data
-    mutex queue_mutex_;
-
-    // Condition variable to signal changes in the state of
-    // the tasks queue
-    condition_variable cv_;
-
-    // Flag to indicate whether the thread pool should stop
-    // or not
-    bool stop_ = false;
-};
-
+bool stop = false;
 
 void Init()
 {
@@ -183,8 +98,11 @@ private:
 
 public:
 	long count;
-	double *sig_t_vec;
-	long *sig_t_indx_vec;
+	// double *sig_t_vec;
+	// long *sig_t_indx_vec;
+
+	std::vector<double> sig_t_vec;
+	std::vector<long> sig_t_indx_vec;
 
 	Bacteria(char *filename)
 	{
@@ -229,7 +147,11 @@ public:
 			mers_5_div_total[i] = (double)mers_5[i] / total_plus_complement;
 
 		count = 0;
-		double *t = new double[M_6];
+
+		// std::map<long, double> t;
+
+		// sig_t_vec = new double[count];
+		// sig_t_indx_vec = new long[count];
 
 		for (long i = 0; i < M_6; i++)
 		{
@@ -257,31 +179,14 @@ public:
 
 			if (stochastic > EPSILON)
 			{
-				t[i] = (mers_6[i] - stochastic) / stochastic;
+				sig_t_vec.push_back((mers_6[i] - stochastic) / stochastic);
+				sig_t_indx_vec.push_back(i);
 				count++;
 			}
-			else
-				t[i] = 0;
 		}
 
-		delete mers_5_div_total;
 		delete mers_6;
 		delete mers_5;
-
-		sig_t_vec = new double[count];
-		sig_t_indx_vec = new long[count];
-
-		int pos = 0;
-		for (long i = 0; i < M_6; i++)
-		{
-			if (t[i] != 0)
-			{
-				sig_t_vec[pos] = t[i];
-				sig_t_indx_vec[pos] = i;
-				pos++;
-			}
-		}
-		delete t;
 
 		fclose(bacteria_file);
 	}
@@ -357,51 +262,95 @@ double CompareBacteria(Bacteria *b1, Bacteria *b2)
 	return correlation / (sqrt(vector_len1) * sqrt(vector_len2));
 }
 
-void CreateBacteria(Bacteria **b, int thread_id, int start, int end)
+void enqueue(function<void()> task)
 {
-	for (int i = start; i < end; i++)
 	{
-		printf("thread %d loading bacteria %d of %d\n", thread_id, i + 1, number_bacteria);
-		b[i] = new Bacteria(bacteria_name[i]);
+		std::unique_lock<std::mutex> lock(queue_mutex_);
+		tasks_.emplace([task]()
+					   {
+            task();
+            tasks_remaining--;
+            task_done_cv.notify_one(); });
+		tasks_remaining++;
+	}
+	cv_.notify_one();
+}
+
+void ThreadPoolWorker()
+{
+	while (true)
+	{
+		function<void()> task;
+		{
+			std::unique_lock<mutex> lock(queue_mutex_);
+			cv_.wait(lock, []
+					 { return !tasks_.empty() || stop; });
+
+			if (stop && tasks_.empty())
+				return;
+
+			task = std::move(tasks_.front());
+			tasks_.pop();
+		}
+
+		task();
 	}
 }
 
-void CompareBacteriaThread(Bacteria **b, int thread_id, int start, int end)
+void wait_for_all_tasks()
 {
-	for (int i = start; i < end; i++)
-	{
-		for (int j = i + 1; j < number_bacteria; j++)
-		{
-			printf("thread %d: %2d %2d -> ", thread_id, i, j);
-			double correlation = CompareBacteria(b[i], b[j]);
-			printf("%.20lf\n", correlation);
-		}
-	}
+	std::unique_lock<std::mutex> lock(task_done_mutex);
+	task_done_cv.wait(lock, []
+					  { return tasks_remaining == 0; });
 }
 
 void CompareAllBacteria()
 {
 	Bacteria **b = new Bacteria *[number_bacteria];
-	ThreadPool pool(thread_count);
+
+	for (int i = 0; i < thread_count; i++)
+		threads_.emplace_back(ThreadPoolWorker);
+
+	auto time_start = std::chrono::high_resolution_clock::now();
+	// ThreadPool pool(thread_count);
 	for (int i = 0; i < number_bacteria; i++)
 	{
-        pool.enqueue([b, i]() {
-            printf("loading bacteria %d of %d\n", i + 1, number_bacteria);
-            b[i] = new Bacteria(bacteria_name[i]);
-        });
+		// pool.enqueue([b, i]() {
+		//     printf("loading bacteria %d of %d\n", i + 1, number_bacteria);
+		//     b[i] = new Bacteria(bacteria_name[i]);
+		// });
+		enqueue([b, i]()
+				{
+			printf("loading bacteria %d of %d\n", i + 1, number_bacteria);
+			b[i] = new Bacteria(bacteria_name[i]); });
 	}
+
+	wait_for_all_tasks();
+
+	auto end = std::chrono::high_resolution_clock::now();
+	std::chrono::duration<double> elapsed = end - time_start;
+	std::cout << "Bacteria creation time elapsed: " << elapsed.count() << " seconds\n";
 
 	for (int i = 0; i < number_bacteria; i++)
 	{
-        pool.enqueue([b, i]() {
-            for (int j = i + 1; j < number_bacteria; j++)
-            {
-                printf("comparing: %2d %2d -> ", i, j);
-                double correlation = CompareBacteria(b[i], b[j]);
-                printf("%.20lf\n", correlation);
-            }
-        });
+		// pool.enqueue([b, i]() {
+		//     for (int j = i + 1; j < number_bacteria; j++)
+		//     {
+		//         printf("comparing: %2d %2d -> ", i, j);
+		//         double correlation = CompareBacteria(b[i], b[j]);
+		//         printf("%.20lf\n", correlation);
+		//     }
+		// });
 	}
+
+	{
+		std::unique_lock<mutex> lock(queue_mutex_);
+		stop = true;
+	}
+	cv_.notify_all();
+
+	for (auto &thread : threads_)
+		thread.join();
 
 	delete[] b;
 }
@@ -410,7 +359,7 @@ int main(int argc, char *argv[])
 {
 	time_t t1 = time(NULL);
 
-	thread_count = 2;
+	thread_count = 8;
 
 	Init();
 	ReadInputFile("../list.txt");
