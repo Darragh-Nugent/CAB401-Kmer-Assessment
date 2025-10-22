@@ -3,12 +3,14 @@ Flat profile:
 Each sample counts as 0.01 seconds.
   %   cumulative   self              self     total           
  time   seconds   seconds    calls   s/call   s/call  name    
- 70.44     18.54    18.54       41     0.45     0.45  Bacteria::Bacteria(char*)
- 29.56     26.32     7.78      820     0.01     0.01  CompareBacteria(Bacteria*, Bacteria*)
-  0.00     26.32     0.00       41     0.00     0.00  Bacteria::InitVectors()
-  0.00     26.32     0.00        1     0.00     0.00  ReadInputFile(char const*)
-  0.00     26.32     0.00        1     0.00    26.32  CompareAllBacteria()
-  0.00     26.32     0.00        1     0.00     0.00  Init()
+ 52.55      7.83     7.83       41     0.19     0.19  Bacteria::Bacteria(char*)
+ 47.38     14.89     7.06      820     0.01     0.01  CompareBacteria(Bacteria*, Bacteria*)
+  0.07     14.90     0.01                             _init
+  0.00     14.90     0.00      899     0.00     0.00  void std::vector<double, std::allocator<double> >::_M_realloc_insert<double>(__gnu_cxx::__normal_iterator<double*, std::vector<double, std::allocator<double> > >, double&&)
+  0.00     14.90     0.00      899     0.00     0.00  void std::vector<long, std::allocator<long> >::_M_realloc_insert<long const&>(__gnu_cxx::__normal_iterator<long*, std::vector<long, std::allocator<long> > >, long const&)
+  0.00     14.90     0.00        1     0.00     0.00  ReadInputFile(char const*)
+  0.00     14.90     0.00        1     0.00    14.89  CompareAllBacteria()
+  0.00     14.90     0.00        1     0.00     0.00  Init()
 
  %         the percentage of the total running time of the
 time       program used by this function.
@@ -46,35 +48,42 @@ notice and this notice are preserved.
 		     Call graph (explanation follows)
 
 
-granularity: each sample hit covers 4 byte(s) for 0.04% of 26.32 seconds
+granularity: each sample hit covers 4 byte(s) for 0.07% of 14.90 seconds
 
 index % time    self  children    called     name
                                                  <spontaneous>
-[1]    100.0    0.00   26.32                 main [1]
-                0.00   26.32       1/1           CompareAllBacteria() [2]
-                0.00    0.00       1/1           ReadInputFile(char const*) [12]
-                0.00    0.00       1/1           Init() [13]
+[1]     99.9    0.00   14.89                 main [1]
+                0.00   14.89       1/1           CompareAllBacteria() [2]
+                0.00    0.00       1/1           ReadInputFile(char const*) [14]
+                0.00    0.00       1/1           Init() [15]
 -----------------------------------------------
-                0.00   26.32       1/1           main [1]
-[2]    100.0    0.00   26.32       1         CompareAllBacteria() [2]
-               18.54    0.00      41/41          Bacteria::Bacteria(char*) [3]
-                7.78    0.00     820/820         CompareBacteria(Bacteria*, Bacteria*) [4]
+                0.00   14.89       1/1           main [1]
+[2]     99.9    0.00   14.89       1         CompareAllBacteria() [2]
+                7.83    0.00      41/41          Bacteria::Bacteria(char*) [3]
+                7.06    0.00     820/820         CompareBacteria(Bacteria*, Bacteria*) [4]
 -----------------------------------------------
-               18.54    0.00      41/41          CompareAllBacteria() [2]
-[3]     70.4   18.54    0.00      41         Bacteria::Bacteria(char*) [3]
-                0.00    0.00      41/41          Bacteria::InitVectors() [11]
+                7.83    0.00      41/41          CompareAllBacteria() [2]
+[3]     52.6    7.83    0.00      41         Bacteria::Bacteria(char*) [3]
+                0.00    0.00     899/899         void std::vector<double, std::allocator<double> >::_M_realloc_insert<double>(__gnu_cxx::__normal_iterator<double*, std::vector<double, std::allocator<double> > >, double&&) [12]
+                0.00    0.00     899/899         void std::vector<long, std::allocator<long> >::_M_realloc_insert<long const&>(__gnu_cxx::__normal_iterator<long*, std::vector<long, std::allocator<long> > >, long const&) [13]
 -----------------------------------------------
-                7.78    0.00     820/820         CompareAllBacteria() [2]
-[4]     29.6    7.78    0.00     820         CompareBacteria(Bacteria*, Bacteria*) [4]
+                7.06    0.00     820/820         CompareAllBacteria() [2]
+[4]     47.4    7.06    0.00     820         CompareBacteria(Bacteria*, Bacteria*) [4]
 -----------------------------------------------
-                0.00    0.00      41/41          Bacteria::Bacteria(char*) [3]
-[11]     0.0    0.00    0.00      41         Bacteria::InitVectors() [11]
+                                                 <spontaneous>
+[5]      0.1    0.01    0.00                 _init [5]
+-----------------------------------------------
+                0.00    0.00     899/899         Bacteria::Bacteria(char*) [3]
+[12]     0.0    0.00    0.00     899         void std::vector<double, std::allocator<double> >::_M_realloc_insert<double>(__gnu_cxx::__normal_iterator<double*, std::vector<double, std::allocator<double> > >, double&&) [12]
+-----------------------------------------------
+                0.00    0.00     899/899         Bacteria::Bacteria(char*) [3]
+[13]     0.0    0.00    0.00     899         void std::vector<long, std::allocator<long> >::_M_realloc_insert<long const&>(__gnu_cxx::__normal_iterator<long*, std::vector<long, std::allocator<long> > >, long const&) [13]
 -----------------------------------------------
                 0.00    0.00       1/1           main [1]
-[12]     0.0    0.00    0.00       1         ReadInputFile(char const*) [12]
+[14]     0.0    0.00    0.00       1         ReadInputFile(char const*) [14]
 -----------------------------------------------
                 0.00    0.00       1/1           main [1]
-[13]     0.0    0.00    0.00       1         Init() [13]
+[15]     0.0    0.00    0.00       1         Init() [15]
 -----------------------------------------------
 
  This table describes the call tree of the program, and was sorted by
@@ -167,5 +176,6 @@ notice and this notice are preserved.
 
 Index by function name
 
-  [12] ReadInputFile(char const*) [2] CompareAllBacteria() [11] Bacteria::InitVectors()
-   [4] CompareBacteria(Bacteria*, Bacteria*) [13] Init()   [3] Bacteria::Bacteria(char*)
+  [14] ReadInputFile(char const*) [15] Init()             [13] void std::vector<long, std::allocator<long> >::_M_realloc_insert<long const&>(__gnu_cxx::__normal_iterator<long*, std::vector<long, std::allocator<long> > >, long const&)
+   [4] CompareBacteria(Bacteria*, Bacteria*) [3] Bacteria::Bacteria(char*) [5] _init
+   [2] CompareAllBacteria()   [12] void std::vector<double, std::allocator<double> >::_M_realloc_insert<double>(__gnu_cxx::__normal_iterator<double*, std::vector<double, std::allocator<double> > >, double&&)

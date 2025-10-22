@@ -3,11 +3,12 @@
 #include <string.h>
 #include <time.h>
 #include <math.h>
-#include <unordered_map>
-#include <map>
+#include <omp.h>
 #include <vector>
 #include <chrono>
 #include <iostream>
+#include <fstream>
+#include <sstream>
 
 int number_bacteria;
 char **bacteria_name;
@@ -165,10 +166,108 @@ public:
             }
         }
 
-        delete mers_6;
-        delete mers_5;
+        delete[] mers_6;
+        delete[] mers_5;
 
         fclose(bacteria_file);
+    }
+
+    Bacteria(const std::string &file_contents)
+    {
+        InitVectors();
+
+        printf("Processing file contents of size %zu\n", file_contents.size());
+
+        size_t pos = 0;
+        size_t len = file_contents.length();
+        char buffer[LEN - 1];
+        long line_start = 0;
+
+        complement = 0;
+        indexs = 0;
+
+        while (pos < len)
+        {
+            if (file_contents[pos] == '>')
+            {
+                // Skip to next newline
+                while (pos < len && file_contents[pos++] != '\n');
+                int j = 0;
+                while (j < LEN - 1 && pos < len)
+                {
+                    char c = file_contents[pos++];
+                    if (c != '\n' && c != '\r' && c != '>')
+                    {
+                        // printf("Adding char %c to buffer\n", c);
+                        buffer[j++] = c;
+                    }
+                }
+                buffer[j] = '\0'; // null terminate!
+                init_buffer(buffer);
+            }
+            else if (file_contents[pos] != '\n' && file_contents[pos] != '\r')
+            {
+                cont_buffer(file_contents[pos]);
+                pos++;
+            }
+            else
+            {
+                pos++;
+            }
+        }
+
+        // The rest of the logic (same as your original constructor)
+        long total_plus_complement = total_mers_6 + complement;
+        double total_div_2 = total_mers_6 * 0.5;
+        int i_mod_aa_number = 0;
+        int i_div_aa_number = 0;
+        long i_mod_M1 = 0;
+        long i_div_M1 = 0;
+
+        double one_l_div_total[AA_NUMBER];
+        for (int i = 0; i < AA_NUMBER; i++)
+            one_l_div_total[i] = (double)mers_1[i] / total_mers_1;
+
+        double *mers_5_div_total = new double[M_5];
+        for (int i = 0; i < M_5; i++)
+            mers_5_div_total[i] = (double)mers_5[i] / total_plus_complement;
+
+        count = 0;
+
+        for (long i = 0; i < M_6; i++)
+        {
+            double p1 = mers_5_div_total[i_div_aa_number];
+            double p2 = one_l_div_total[i_mod_aa_number];
+            double p3 = mers_5_div_total[i_mod_M1];
+            double p4 = one_l_div_total[i_div_M1];
+            double stochastic = (p1 * p2 + p3 * p4) * total_div_2;
+
+            if (i_mod_aa_number == AA_NUMBER - 1)
+            {
+                i_mod_aa_number = 0;
+                i_div_aa_number++;
+            }
+            else
+                i_mod_aa_number++;
+
+            if (i_mod_M1 == M_5 - 1)
+            {
+                i_mod_M1 = 0;
+                i_div_M1++;
+            }
+            else
+                i_mod_M1++;
+
+            if (stochastic > EPSILON)
+            {
+                sig_t_vec.push_back((mers_6[i] - stochastic) / stochastic);
+                sig_t_indx_vec.push_back(i);
+                count++;
+            }
+        }
+
+        delete[] mers_6;
+        delete[] mers_5;
     }
 };
 
@@ -242,26 +341,64 @@ double CompareBacteria(Bacteria *b1, Bacteria *b2)
     return correlation / (sqrt(vector_len1) * sqrt(vector_len2));
 }
 
-void CompareAllBacteria()
+void ReadFAAFiles(std::vector<std::string> &file_contents)
 {
-    Bacteria **b = new Bacteria *[number_bacteria];
+#pragma omp parallel for schedule(dynamic, 2)
     for (int i = 0; i < number_bacteria; i++)
     {
-        printf("load %d of %d\n", i + 1, number_bacteria);
-        b[i] = new Bacteria(bacteria_name[i]);
+        std::ifstream in(bacteria_name[i]);
+        if (!in)
+        {
+            std::cerr << "Could not open " << bacteria_name[i] << "\n";
+            exit(1);
+        }
+        std::stringstream buffer;
+        buffer << in.rdbuf(); // read entire file into buffer
+        file_contents[i] = buffer.str();
     }
+}
 
+void CompareAllBacteria()
+{
+    std::vector<std::string> file_contents(number_bacteria);
+    ReadFAAFiles(file_contents);
+    Bacteria **b = new Bacteria *[number_bacteria];
+
+    // auto time_start = std::chrono::high_resolution_clock::now();
+
+#pragma omp parallel for schedule(dynamic, 2)
+    for (int i = 0; i < number_bacteria; i++)
+    {
+        printf("load %d of %d from %d\n", i + 1, number_bacteria, omp_get_thread_num());
+        b[i] = new Bacteria(file_contents[i]);
+    }
+    // auto end = std::chrono::high_resolution_clock::now();
+    // std::chrono::duration<double> elapsed = end - time_start;
+    // std::cout << "Bacteria creation time elapsed: " << elapsed.count() << " seconds\n";
+    // auto time_start = std::chrono::high_resolution_clock::now();
+
+    //    #pragma omp parallel for
     for (int i = 0; i < number_bacteria - 1; i++)
+    {
+#pragma omp parallel for schedule(dynamic, 2)
         for (int j = i + 1; j < number_bacteria; j++)
         {
+            printf("%2d %2d -> ", i, j);
             double correlation = CompareBacteria(b[i], b[j]);
-            printf("%2d %2d -> %.20lf\n", i, j, correlation);
+            printf("%.20lf from %d\n", correlation, omp_get_thread_num());
         }
+    }
+
+    // auto end = std::chrono::high_resolution_clock::now();
+    // std::chrono::duration<double> elapsed = end - time_start;
+    // std::cout << "Bacteria comparision time elapsed: " << elapsed.count() << " seconds\n";
 }
 
 int main(int argc, char *argv[])
 {
     auto start = std::chrono::high_resolution_clock::now();
+
+    omp_set_num_threads(8);
 
     Init();
     ReadInputFile("../list.txt");

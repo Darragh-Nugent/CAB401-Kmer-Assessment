@@ -30,13 +30,13 @@ queue<function<void()>> tasks;
 
 mutex queue_mutex;
 mutex task_done_mutex;
+mutex print_mutex;
 
 condition_variable queue_cv;
 condition_variable task_done_cv;
 
 std::atomic<int> tasks_remaining = 0;
-
-bool stop = false;
+std::atomic<bool> stop = false;
 
 void Init()
 {
@@ -187,7 +187,7 @@ public:
 
 		delete[] mers_6;
 		delete[] mers_5;
-        delete mers_5_div_total;
+        delete[] mers_5_div_total;
 
 		fclose(bacteria_file);
 	}
@@ -312,7 +312,6 @@ void CompareAllBacteria()
 	for (int i = 0; i < thread_count; i++)
 		threads.emplace_back(ThreadPool);
 
-	// auto time_start = std::chrono::high_resolution_clock::now();
 	for (int i = 0; i < number_bacteria; i++)
 	{
 		enqueue([b, i]()
@@ -329,9 +328,9 @@ void CompareAllBacteria()
 				{
 			for (int j = i + 1; j < number_bacteria; j++)
 			{
-				printf("%2d %2d -> ", i, j);
 				double correlation = CompareBacteria(b[i], b[j]);
-				printf("%.20lf\n", correlation);
+				std::lock_guard<mutex> print_lock(print_mutex);
+            	printf("%2d %2d -> %.20lf\n", i, j, correlation);
 			} });
 	}
 
@@ -351,7 +350,7 @@ int main(int argc, char *argv[])
 {
     auto start = std::chrono::high_resolution_clock::now();
 
-    thread_count = 8;
+    thread_count = 1;
 
     Init();
     ReadInputFile("../list.txt");
