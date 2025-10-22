@@ -17,9 +17,7 @@ int main(int argc, char *argv[])
         if (fabs(value1 - value2) > 1e-6)
         {
             printf("Values differ: %f vs %f\n", value1, value2);
-        }
-
-        
+        }        
     }
     printf("Comparison complete.\n");
     return 0;

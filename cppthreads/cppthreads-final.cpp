@@ -350,7 +350,7 @@ int main(int argc, char *argv[])
 {
     auto start = std::chrono::high_resolution_clock::now();
 
-    thread_count = 1;
+    thread_count = 4;
 
     Init();
     ReadInputFile("../list.txt");
