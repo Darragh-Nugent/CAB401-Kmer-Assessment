@@ -77,11 +77,11 @@ private:
 
 public:
     long count;
-    // double *sig_t_vec;
-    // long *sig_t_indx_vec;
+    double *sig_t_vec;
+    long *sig_t_indx_vec;
 
-    std::vector<double> sig_t_vec;
-    std::vector<long> sig_t_indx_vec;
+    // std::vector<double> sig_t_vec;
+    // std::vector<long> sig_t_indx_vec;
 
     Bacteria(char *filename)
     {
@@ -126,11 +126,7 @@ public:
             mers_5_div_total[i] = (double)mers_5[i] / total_plus_complement;
 
         count = 0;
-
-        // std::map<long, double> t;
-
-        // sig_t_vec = new double[count];
-        // sig_t_indx_vec = new long[count];
+        double *t = new double[M_6];
 
         for (long i = 0; i < M_6; i++)
         {
@@ -158,14 +154,31 @@ public:
 
             if (stochastic > EPSILON)
             {
-                sig_t_vec.push_back((mers_6[i] - stochastic) / stochastic);
-                sig_t_indx_vec.push_back(i);
+                t[i] = (mers_6[i] - stochastic) / stochastic;
                 count++;
             }
+            else
+                t[i] = 0;
         }
 
+        delete mers_5_div_total;
         delete mers_6;
         delete mers_5;
+
+        sig_t_vec = new double[count];
+        sig_t_indx_vec = new long[count];
+
+        int pos = 0;
+        for (long i = 0; i < M_6; i++)
+        {
+            if (t[i] != 0)
+            {
+                sig_t_vec[pos] = t[i];
+                sig_t_indx_vec[pos] = i;
+                pos++;
+            }
+        }
+        delete t;
 
         fclose(bacteria_file);
     }
@@ -200,7 +213,7 @@ double CompareBacteria(Bacteria *b1, Bacteria *b2)
     double vector_len2 = 0;
     long p1 = 0;
     long p2 = 0;
-    while (p1 < b1->sig_t_vec.size() && p2 < b2->sig_t_vec.size())
+    while (p1 < b1->count && p2 < b2->count)
     {
         long n1 = b1->sig_t_indx_vec[p1];
         long n2 = b2->sig_t_indx_vec[p2];
@@ -225,13 +238,13 @@ double CompareBacteria(Bacteria *b1, Bacteria *b2)
             correlation += t1 * t2;
         }
     }
-    while (p1 < b1->sig_t_vec.size())
+    while (p1 < b1->count)
     {
         long n1 = b1->sig_t_indx_vec[p1];
         double t1 = b1->sig_t_vec[p1++];
         vector_len1 += (t1 * t1);
     }
-    while (p2 < b2->sig_t_vec.size())
+    while (p2 < b2->count)
     {
         long n2 = b2->sig_t_indx_vec[p2];
         double t2 = b2->sig_t_vec[p2++];
@@ -244,29 +257,28 @@ double CompareBacteria(Bacteria *b1, Bacteria *b2)
 void CompareAllBacteria()
 {
     Bacteria **b = new Bacteria *[number_bacteria];
-    
-    // auto time_start = std::chrono::high_resolution_clock::now();
 
-    #pragma omp parallel for schedule(dynamic, 2)
+    auto time_start = std::chrono::high_resolution_clock::now();
+
+#pragma omp parallel for schedule(static, 2)
     for (int i = 0; i < number_bacteria; i++)
     {
         printf("load %d of %d from %d\n", i + 1, number_bacteria, omp_get_thread_num());
         b[i] = new Bacteria(bacteria_name[i]);
     }
-    // auto end = std::chrono::high_resolution_clock::now();
-    // std::chrono::duration<double> elapsed = end - time_start;
-    // std::cout << "Bacteria creation time elapsed: " << elapsed.count() << " seconds\n";
+    auto end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> elapsed = end - time_start;
+    std::cout << "Bacteria creation time elapsed: " << elapsed.count() << " seconds\n";
     // auto time_start = std::chrono::high_resolution_clock::now();
 
     //    #pragma omp parallel for
     for (int i = 0; i < number_bacteria - 1; i++)
     {
-        #pragma omp parallel for schedule(dynamic, 2)
+#pragma omp parallel for schedule(dynamic, 2)
         for (int j = i + 1; j < number_bacteria; j++)
         {
-            printf("%2d %2d -> ", i, j);
             double correlation = CompareBacteria(b[i], b[j]);
-            printf("%.20lf from %d\n", correlation, omp_get_thread_num());
+            printf("%2d %2d -> %.20lf from %d\n", i, j, correlation, omp_get_thread_num());
         }
     }
 
@@ -277,9 +289,10 @@ void CompareAllBacteria()
 
 int main(int argc, char *argv[])
 {
+    int num_threads = argv[1] ? atoi(argv[1]) : 4;
     auto start = std::chrono::high_resolution_clock::now();
 
-    omp_set_num_threads(1);
+    omp_set_num_threads(num_threads);
 
     Init();
     ReadInputFile("../list.txt");

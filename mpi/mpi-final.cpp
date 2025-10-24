@@ -372,9 +372,8 @@ void CompareAllBacteria()
 	{
 		for (int j = i + 1; j < number_bacteria; j++)
 		{
-			printf("Rank %d: %2d %2d -> ", rank, i, j);
 			double correlation = CompareBacteria(summaries[i], summaries[j]);
-			printf("%.20lf\n", correlation);
+            printf("%2d %2d -> %.20lf\n, from %d", i, j, correlation, rank);
 		}
 	}
 

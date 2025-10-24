@@ -79,106 +79,100 @@ private:
 
 public:
     long count;
-    // double *sig_t_vec;
-    // long *sig_t_indx_vec;
+    double *sig_t_vec;
+    long *sig_t_indx_vec;
 
-    std::vector<double> sig_t_vec;
-    std::vector<long> sig_t_indx_vec;
+    // Bacteria(char *filename)
+    // {
+    //     FILE *bacteria_file = fopen(filename, "r");
+    //     if (bacteria_file == NULL)
+    //     {
+    //         fprintf(stderr, "Error: failed to open file %s\n", filename);
+    //         exit(1);
+    //     }
 
-    Bacteria(char *filename)
-    {
-        FILE *bacteria_file = fopen(filename, "r");
-        if (bacteria_file == NULL)
-        {
-            fprintf(stderr, "Error: failed to open file %s\n", filename);
-            exit(1);
-        }
+    //     InitVectors();
 
-        InitVectors();
+    //     char ch;
+    //     while ((ch = fgetc(bacteria_file)) != EOF)
+    //     {
+    //         if (ch == '>')
+    //         {
+    //             while (fgetc(bacteria_file) != '\n')
+    //                 ; // skip rest of line
 
-        char ch;
-        while ((ch = fgetc(bacteria_file)) != EOF)
-        {
-            if (ch == '>')
-            {
-                while (fgetc(bacteria_file) != '\n')
-                    ; // skip rest of line
+    //             char buffer[LEN - 1];
+    //             fread(buffer, sizeof(char), LEN - 1, bacteria_file);
+    //             init_buffer(buffer);
+    //         }
+    //         else if (ch != '\n' && ch != '\r')
+    //             cont_buffer(ch);
+    //     }
 
-                char buffer[LEN - 1];
-                fread(buffer, sizeof(char), LEN - 1, bacteria_file);
-                init_buffer(buffer);
-            }
-            else if (ch != '\n' && ch != '\r')
-                cont_buffer(ch);
-        }
+    //     long total_plus_complement = total_mers_6 + complement;
+    //     double total_div_2 = total_mers_6 * 0.5;
+    //     int i_mod_aa_number = 0;
+    //     int i_div_aa_number = 0;
+    //     long i_mod_M1 = 0;
+    //     long i_div_M1 = 0;
 
-        long total_plus_complement = total_mers_6 + complement;
-        double total_div_2 = total_mers_6 * 0.5;
-        int i_mod_aa_number = 0;
-        int i_div_aa_number = 0;
-        long i_mod_M1 = 0;
-        long i_div_M1 = 0;
+    //     double one_l_div_total[AA_NUMBER];
+    //     for (int i = 0; i < AA_NUMBER; i++)
+    //         one_l_div_total[i] = (double)mers_1[i] / total_mers_1;
 
-        double one_l_div_total[AA_NUMBER];
-        for (int i = 0; i < AA_NUMBER; i++)
-            one_l_div_total[i] = (double)mers_1[i] / total_mers_1;
+    //     double *mers_5_div_total = new double[M_5];
+    //     for (int i = 0; i < M_5; i++)
+    //         mers_5_div_total[i] = (double)mers_5[i] / total_plus_complement;
 
-        double *mers_5_div_total = new double[M_5];
-        for (int i = 0; i < M_5; i++)
-            mers_5_div_total[i] = (double)mers_5[i] / total_plus_complement;
+    //     count = 0;
 
-        count = 0;
+    //     // std::map<long, double> t;
 
-        // std::map<long, double> t;
+    //     // sig_t_vec = new double[count];
+    //     // sig_t_indx_vec = new long[count];
 
-        // sig_t_vec = new double[count];
-        // sig_t_indx_vec = new long[count];
+    //     for (long i = 0; i < M_6; i++)
+    //     {
+    //         double p1 = mers_5_div_total[i_div_aa_number];
+    //         double p2 = one_l_div_total[i_mod_aa_number];
+    //         double p3 = mers_5_div_total[i_mod_M1];
+    //         double p4 = one_l_div_total[i_div_M1];
+    //         double stochastic = (p1 * p2 + p3 * p4) * total_div_2;
 
-        for (long i = 0; i < M_6; i++)
-        {
-            double p1 = mers_5_div_total[i_div_aa_number];
-            double p2 = one_l_div_total[i_mod_aa_number];
-            double p3 = mers_5_div_total[i_mod_M1];
-            double p4 = one_l_div_total[i_div_M1];
-            double stochastic = (p1 * p2 + p3 * p4) * total_div_2;
+    //         if (i_mod_aa_number == AA_NUMBER - 1)
+    //         {
+    //             i_mod_aa_number = 0;
+    //             i_div_aa_number++;
+    //         }
+    //         else
+    //             i_mod_aa_number++;
 
-            if (i_mod_aa_number == AA_NUMBER - 1)
-            {
-                i_mod_aa_number = 0;
-                i_div_aa_number++;
-            }
-            else
-                i_mod_aa_number++;
+    //         if (i_mod_M1 == M_5 - 1)
+    //         {
+    //             i_mod_M1 = 0;
+    //             i_div_M1++;
+    //         }
+    //         else
+    //             i_mod_M1++;
 
-            if (i_mod_M1 == M_5 - 1)
-            {
-                i_mod_M1 = 0;
-                i_div_M1++;
-            }
-            else
-                i_mod_M1++;
+    //         if (stochastic > EPSILON)
+    //         {
+    //             sig_t_vec.push_back((mers_6[i] - stochastic) / stochastic);
+    //             sig_t_indx_vec.push_back(i);
+    //             count++;
+    //         }
+    //     }
 
-            if (stochastic > EPSILON)
-            {
-                sig_t_vec.push_back((mers_6[i] - stochastic) / stochastic);
-                sig_t_indx_vec.push_back(i);
-                count++;
-            }
-        }
+    //     delete[] mers_6;
+    //     delete[] mers_5;
 
-        delete[] mers_6;
-        delete[] mers_5;
-
-        fclose(bacteria_file);
-    }
+    //     fclose(bacteria_file);
+    // }
 
     Bacteria(const std::string &file_contents)
     {
         InitVectors();
-
-        printf("Processing file contents of size %zu\n", file_contents.size());
-
-        size_t pos = 0;
+        size_t p = 0;
         size_t len = file_contents.length();
         char buffer[LEN - 1];
         long line_start = 0;
@@ -186,16 +180,17 @@ public:
         complement = 0;
         indexs = 0;
 
-        while (pos < len)
+        while (p < len)
         {
-            if (file_contents[pos] == '>')
+            if (file_contents[p] == '>')
             {
                 // Skip to next newline
-                while (pos < len && file_contents[pos++] != '\n');
+                while (p < len && file_contents[p++] != '\n')
+                    ;
                 int j = 0;
-                while (j < LEN - 1 && pos < len)
+                while (j < LEN - 1 && p < len)
                 {
-                    char c = file_contents[pos++];
+                    char c = file_contents[p++];
                     if (c != '\n' && c != '\r' && c != '>')
                     {
                         // printf("Adding char %c to buffer\n", c);
@@ -205,18 +200,17 @@ public:
                 buffer[j] = '\0'; // null terminate!
                 init_buffer(buffer);
             }
-            else if (file_contents[pos] != '\n' && file_contents[pos] != '\r')
+            else if (file_contents[p] != '\n' && file_contents[p] != '\r')
             {
-                cont_buffer(file_contents[pos]);
-                pos++;
+                cont_buffer(file_contents[p]);
+                p++;
             }
             else
             {
-                pos++;
+                p++;
             }
         }
 
-        // The rest of the logic (same as your original constructor)
         long total_plus_complement = total_mers_6 + complement;
         double total_div_2 = total_mers_6 * 0.5;
         int i_mod_aa_number = 0;
@@ -233,6 +227,7 @@ public:
             mers_5_div_total[i] = (double)mers_5[i] / total_plus_complement;
 
         count = 0;
+        double *t = new double[M_6];
 
         for (long i = 0; i < M_6; i++)
         {
@@ -260,14 +255,33 @@ public:
 
             if (stochastic > EPSILON)
             {
-                sig_t_vec.push_back((mers_6[i] - stochastic) / stochastic);
-                sig_t_indx_vec.push_back(i);
+                t[i] = (mers_6[i] - stochastic) / stochastic;
                 count++;
             }
+            else
+                t[i] = 0;
         }
 
-        delete[] mers_6;
-        delete[] mers_5;
+        delete mers_5_div_total;
+        delete mers_6;
+        delete mers_5;
+
+        sig_t_vec = new double[count];
+        sig_t_indx_vec = new long[count];
+
+        int pos = 0;
+        for (long i = 0; i < M_6; i++)
+        {
+            if (t[i] != 0)
+            {
+                sig_t_vec[pos] = t[i];
+                sig_t_indx_vec[pos] = i;
+                pos++;
+            }
+        }
+        delete t;
+
+        // fclose (bacteria_file);
     }
 };
 
@@ -300,7 +314,7 @@ double CompareBacteria(Bacteria *b1, Bacteria *b2)
     double vector_len2 = 0;
     long p1 = 0;
     long p2 = 0;
-    while (p1 < b1->sig_t_vec.size() && p2 < b2->sig_t_vec.size())
+    while (p1 < b1->count && p2 < b2->count)
     {
         long n1 = b1->sig_t_indx_vec[p1];
         long n2 = b2->sig_t_indx_vec[p2];
@@ -325,13 +339,13 @@ double CompareBacteria(Bacteria *b1, Bacteria *b2)
             correlation += t1 * t2;
         }
     }
-    while (p1 < b1->sig_t_vec.size())
+    while (p1 < b1->count)
     {
         long n1 = b1->sig_t_indx_vec[p1];
         double t1 = b1->sig_t_vec[p1++];
         vector_len1 += (t1 * t1);
     }
-    while (p2 < b2->sig_t_vec.size())
+    while (p2 < b2->count)
     {
         long n2 = b2->sig_t_indx_vec[p2];
         double t2 = b2->sig_t_vec[p2++];
@@ -396,9 +410,11 @@ void CompareAllBacteria()
 
 int main(int argc, char *argv[])
 {
+    int num_threads = argv[1] ? atoi(argv[1]) : 4;
+
     auto start = std::chrono::high_resolution_clock::now();
 
-    omp_set_num_threads(8);
+    omp_set_num_threads(num_threads);
 
     Init();
     ReadInputFile("../list.txt");

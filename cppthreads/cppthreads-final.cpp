@@ -50,147 +50,159 @@ void Init()
 class Bacteria
 {
 private:
-	long *mers_6;
-	long *mers_5;
-	long mers_1[AA_NUMBER];
-	long indexs;
-	long total_mers_6;
-	long total_mers_1;
-	long complement;
+    long *mers_6;
+    long *mers_5;
+    long mers_1[AA_NUMBER];
+    long indexs;
+    long total_mers_6;
+    long total_mers_1;
+    long complement;
 
-	void InitVectors()
-	{
-		mers_6 = new long[M_6];
-		mers_5 = new long[M_5];
-		memset(mers_6, 0, M_6 * sizeof(long));
-		memset(mers_5, 0, M_5 * sizeof(long));
-		memset(mers_1, 0, AA_NUMBER * sizeof(long));
-		total_mers_6 = 0;
-		total_mers_1 = 0;
-		complement = 0;
-	}
+    void InitVectors()
+    {
+        mers_6 = new long[M_6];
+        mers_5 = new long[M_5];
+        memset(mers_6, 0, M_6 * sizeof(long));
+        memset(mers_5, 0, M_5 * sizeof(long));
+        memset(mers_1, 0, AA_NUMBER * sizeof(long));
+        total_mers_6 = 0;
+        total_mers_1 = 0;
+        complement = 0;
+    }
 
-	void init_buffer(char *buffer)
-	{
-		complement++;
-		indexs = 0;
-		for (int i = 0; i < LEN - 1; i++)
-		{
-			short enc = encode(buffer[i]);
-			mers_1[enc]++;
-			total_mers_1++;
-			indexs = indexs * AA_NUMBER + enc;
-		}
-		mers_5[indexs]++;
-	}
+    void init_buffer(char *buffer)
+    {
+        complement++;
+        indexs = 0;
+        for (int i = 0; i < LEN - 1; i++)
+        {
+            short enc = encode(buffer[i]);
+            mers_1[enc]++;
+            total_mers_1++;
+            indexs = indexs * AA_NUMBER + enc;
+        }
+        mers_5[indexs]++;
+    }
 
-	void cont_buffer(char ch)
-	{
-		short enc = encode(ch);
-		mers_1[enc]++;
-		total_mers_1++;
-		long index = indexs * AA_NUMBER + enc;
-		mers_6[index]++;
-		total_mers_6++;
-		indexs = (indexs % M_4) * AA_NUMBER + enc;
-		mers_5[indexs]++;
-	}
+    void cont_buffer(char ch)
+    {
+        short enc = encode(ch);
+        mers_1[enc]++;
+        total_mers_1++;
+        long index = indexs * AA_NUMBER + enc;
+        mers_6[index]++;
+        total_mers_6++;
+        indexs = (indexs % M_4) * AA_NUMBER + enc;
+        mers_5[indexs]++;
+    }
 
 public:
-	long count;
-	// double *sig_t_vec;
-	// long *sig_t_indx_vec;
+    long count;
+    double *sig_t_vec;
+    long *sig_t_indx_vec;
 
-	std::vector<double> sig_t_vec;
-	std::vector<long> sig_t_indx_vec;
+    // std::vector<double> sig_t_vec;
+    // std::vector<long> sig_t_indx_vec;
 
-	Bacteria(char *filename)
-	{
-		FILE *bacteria_file = fopen(filename, "r");
-		if (bacteria_file == NULL)
-		{
-			fprintf(stderr, "Error: failed to open file %s\n", filename);
-			exit(1);
-		}
+    Bacteria(char *filename)
+    {
+        FILE *bacteria_file = fopen(filename, "r");
+        if (bacteria_file == NULL)
+        {
+            fprintf(stderr, "Error: failed to open file %s\n", filename);
+            exit(1);
+        }
 
-		InitVectors();
+        InitVectors();
 
-		char ch;
-		while ((ch = fgetc(bacteria_file)) != EOF)
-		{
-			if (ch == '>')
-			{
-				while (fgetc(bacteria_file) != '\n')
-					; // skip rest of line
+        char ch;
+        while ((ch = fgetc(bacteria_file)) != EOF)
+        {
+            if (ch == '>')
+            {
+                while (fgetc(bacteria_file) != '\n')
+                    ; // skip rest of line
 
-				char buffer[LEN - 1];
-				fread(buffer, sizeof(char), LEN - 1, bacteria_file);
-				init_buffer(buffer);
-			}
-			else if (ch != '\n' && ch != '\r')
-				cont_buffer(ch);
-		}
+                char buffer[LEN - 1];
+                fread(buffer, sizeof(char), LEN - 1, bacteria_file);
+                init_buffer(buffer);
+            }
+            else if (ch != '\n' && ch != '\r')
+                cont_buffer(ch);
+        }
 
-		long total_plus_complement = total_mers_6 + complement;
-		double total_div_2 = total_mers_6 * 0.5;
-		int i_mod_aa_number = 0;
-		int i_div_aa_number = 0;
-		long i_mod_M1 = 0;
-		long i_div_M1 = 0;
+        long total_plus_complement = total_mers_6 + complement;
+        double total_div_2 = total_mers_6 * 0.5;
+        int i_mod_aa_number = 0;
+        int i_div_aa_number = 0;
+        long i_mod_M1 = 0;
+        long i_div_M1 = 0;
 
-		double one_l_div_total[AA_NUMBER];
-		for (int i = 0; i < AA_NUMBER; i++)
-			one_l_div_total[i] = (double)mers_1[i] / total_mers_1;
+        double one_l_div_total[AA_NUMBER];
+        for (int i = 0; i < AA_NUMBER; i++)
+            one_l_div_total[i] = (double)mers_1[i] / total_mers_1;
 
-		double *mers_5_div_total = new double[M_5];
-		for (int i = 0; i < M_5; i++)
-			mers_5_div_total[i] = (double)mers_5[i] / total_plus_complement;
+        double *mers_5_div_total = new double[M_5];
+        for (int i = 0; i < M_5; i++)
+            mers_5_div_total[i] = (double)mers_5[i] / total_plus_complement;
 
-		count = 0;
+        count = 0;
+        double *t = new double[M_6];
 
-		// std::map<long, double> t;
+        for (long i = 0; i < M_6; i++)
+        {
+            double p1 = mers_5_div_total[i_div_aa_number];
+            double p2 = one_l_div_total[i_mod_aa_number];
+            double p3 = mers_5_div_total[i_mod_M1];
+            double p4 = one_l_div_total[i_div_M1];
+            double stochastic = (p1 * p2 + p3 * p4) * total_div_2;
 
-		// sig_t_vec = new double[count];
-		// sig_t_indx_vec = new long[count];
+            if (i_mod_aa_number == AA_NUMBER - 1)
+            {
+                i_mod_aa_number = 0;
+                i_div_aa_number++;
+            }
+            else
+                i_mod_aa_number++;
 
-		for (long i = 0; i < M_6; i++)
-		{
-			double p1 = mers_5_div_total[i_div_aa_number];
-			double p2 = one_l_div_total[i_mod_aa_number];
-			double p3 = mers_5_div_total[i_mod_M1];
-			double p4 = one_l_div_total[i_div_M1];
-			double stochastic = (p1 * p2 + p3 * p4) * total_div_2;
+            if (i_mod_M1 == M_5 - 1)
+            {
+                i_mod_M1 = 0;
+                i_div_M1++;
+            }
+            else
+                i_mod_M1++;
 
-			if (i_mod_aa_number == AA_NUMBER - 1)
-			{
-				i_mod_aa_number = 0;
-				i_div_aa_number++;
-			}
-			else
-				i_mod_aa_number++;
+            if (stochastic > EPSILON)
+            {
+                t[i] = (mers_6[i] - stochastic) / stochastic;
+                count++;
+            }
+            else
+                t[i] = 0;
+        }
 
-			if (i_mod_M1 == M_5 - 1)
-			{
-				i_mod_M1 = 0;
-				i_div_M1++;
-			}
-			else
-				i_mod_M1++;
+        delete mers_5_div_total;
+        delete mers_6;
+        delete mers_5;
 
-			if (stochastic > EPSILON)
-			{
-				sig_t_vec.push_back((mers_6[i] - stochastic) / stochastic);
-				sig_t_indx_vec.push_back(i);
-				count++;
-			}
-		}
+        sig_t_vec = new double[count];
+        sig_t_indx_vec = new long[count];
 
-		delete[] mers_6;
-		delete[] mers_5;
-        delete[] mers_5_div_total;
+        int pos = 0;
+        for (long i = 0; i < M_6; i++)
+        {
+            if (t[i] != 0)
+            {
+                sig_t_vec[pos] = t[i];
+                sig_t_indx_vec[pos] = i;
+                pos++;
+            }
+        }
+        delete t;
 
-		fclose(bacteria_file);
-	}
+        fclose(bacteria_file);
+    }
 };
 
 void ReadInputFile(const char *input_name)
@@ -268,7 +280,7 @@ void enqueue(function<void()> task)
 	{
 		std::unique_lock<std::mutex> lock(queue_mutex);
 		tasks.emplace([task]()
-					   {
+					  {
             task();
             tasks_remaining--;
             task_done_cv.notify_one(); });
@@ -285,7 +297,7 @@ void ThreadPool()
 		{
 			std::unique_lock<mutex> lock(queue_mutex);
 			queue_cv.wait(lock, []
-					 { return !tasks.empty() || stop; });
+						  { return !tasks.empty() || stop; });
 
 			if (stop && tasks.empty())
 				return;
@@ -309,6 +321,8 @@ void CompareAllBacteria()
 {
 	Bacteria **b = new Bacteria *[number_bacteria];
 
+	auto start = std::chrono::high_resolution_clock::now();
+
 	for (int i = 0; i < thread_count; i++)
 		threads.emplace_back(ThreadPool);
 
@@ -320,7 +334,10 @@ void CompareAllBacteria()
 			b[i] = new Bacteria(bacteria_name[i]); });
 	}
 
-    wait_for_all_tasks();
+	wait_for_all_tasks();
+	auto end = std::chrono::high_resolution_clock::now();
+	std::chrono::duration<double> elapsed = end - start;
+	std::cout << "creation Time elapsed: " << elapsed.count() << " seconds\n";
 
 	for (int i = 0; i < number_bacteria; i++)
 	{
@@ -348,16 +365,16 @@ void CompareAllBacteria()
 
 int main(int argc, char *argv[])
 {
-    auto start = std::chrono::high_resolution_clock::now();
+	thread_count = argv[1] ? atoi(argv[1]) : 4;
 
-    thread_count = 4;
+	auto start = std::chrono::high_resolution_clock::now();
 
-    Init();
-    ReadInputFile("../list.txt");
-    CompareAllBacteria();
+	Init();
+	ReadInputFile("../list.txt");
+	CompareAllBacteria();
 
-    auto end = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double> elapsed = end - start;
-    std::cout << "Comparision Time elapsed: " << elapsed.count() << " seconds\n";
+	auto end = std::chrono::high_resolution_clock::now();
+	std::chrono::duration<double> elapsed = end - start;
+	std::cout << "Comparision Time elapsed: " << elapsed.count() << " seconds\n";
 	return 0;
 }
