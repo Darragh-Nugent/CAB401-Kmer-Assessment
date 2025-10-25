@@ -270,7 +270,7 @@ double CompareBacteria(BacteriaSummary *b1, BacteriaSummary *b2)
 	return correlation / (sqrt(vector_len1) * sqrt(vector_len2));
 }
 
-void RetrieveBacteriaInfo(int start, int block_size, int *all_counts, Bacteria **local_b, double **all_sig_t_vec, long **all_sig_t_indx_vec)
+void RetrieveBacteriaInfo(int block_size, int *all_counts, double **all_sig_t_vec, long **all_sig_t_indx_vec)
 {
 	for (int i = 0; i < number_bacteria; i++)
 	{
@@ -323,6 +323,92 @@ void FreeBacteria(BacteriaSummary **summaries, Bacteria **local_b, int *all_coun
 	delete[] all_sig_t_indx_vec;
 }
 
+void RecvBacteria(int start_index)
+{
+	int next_index = start_index;
+	int active_workers = size - 1;
+
+	for (int i = start_index; i < size && next_index < number_bacteria; i++)
+	{
+		MPI_Send(&next_index, 1, MPI_INT, i, 0, MPI_COMM_WORLD);
+		next_index++;
+	}
+
+	while (active_workers > 0)
+	{
+		MPI_Status status;
+		int finished_index;
+
+		// Receive signal from any worker
+		MPI_Recv(&finished_index, 1, MPI_INT, MPI_ANY_SOURCE, tag_indx, MPI_COMM_WORLD, &status);
+
+		if (next_index < number_bacteria)
+		{
+			MPI_Send(&next_index, 1, MPI_INT, status.MPI_SOURCE, 0, MPI_COMM_WORLD);
+			next_index++;
+		}
+		else
+		{
+			int stop_signal = -1;
+			MPI_Send(&stop_signal, 1, MPI_INT, status.MPI_SOURCE, 0, MPI_COMM_WORLD);
+			active_workers--;
+		}
+	}
+}
+
+void SendBacteria(BacteriaSummary **summaries)
+{
+	int index;
+
+	// Initially request the first index
+	MPI_Recv(&index, 1, MPI_INT, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+
+	while (index != -1)
+	{
+		for (int j = index + 1; j < number_bacteria; j++)
+		{
+
+			printf("Rank %d: %2d %2d -> ", rank, index, j);
+			double correlation = CompareBacteria(summaries[index], summaries[j]);
+			printf("%.20lf\n", correlation);
+		}
+
+		// Send result to master
+		MPI_Send(&index, 1, MPI_INT, 0, tag_indx, MPI_COMM_WORLD);
+
+		// Ask for next index
+		MPI_Recv(&index, 1, MPI_INT, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+	}
+}
+
+void SplitBacteria(BacteriaSummary **summaries, int i)
+{
+	if (size <= 1)
+	{
+		for (; i < number_bacteria - 1; i++)
+		{
+			for (int j = i + 1; j < number_bacteria; j++)
+			{
+
+				printf("Rank %d: %2d %2d -> ", rank, i, j);
+				double correlation = CompareBacteria(summaries[i], summaries[j]);
+				printf("%.20lf\n", correlation);
+			}
+		}
+		return;
+	}
+	if (rank == 0)
+	{
+		RecvBacteria(i);
+	}
+	else
+	{
+		SendBacteria(summaries);
+	}
+
+	MPI_Barrier(MPI_COMM_WORLD);
+}
+
 void CompareAllBacteria()
 {
 	BacteriaSummary **summaries = new BacteriaSummary *[number_bacteria];
@@ -333,44 +419,40 @@ void CompareAllBacteria()
 
 	int block_size = (number_bacteria + size - 1) / size;
 	int start = rank * block_size;
+	int end = std::min(start + block_size, number_bacteria);
 
-	Bacteria **local_b = new Bacteria *[block_size];
+	// auto start_time = std::chrono::high_resolution_clock::now();
 
-	for (int i = start; i < number_bacteria; i++)
+	for (int i = start; i < end; i++)
 	{
-		if (i >= start && i < start + block_size)
-		{
-			printf("Rank %d loading bacteria %d of %d\n", rank, i, number_bacteria);
+		printf("Rank %d loading bacteria %d of %d\n", rank, i, number_bacteria);
 
-			int local_index = i - start;
-			local_b[local_index] = new Bacteria(&bacteria_name[i * NAME_SIZE]);
-			all_counts[i] = local_b[local_index]->count;
-			all_sig_t_vec[i] = local_b[local_index]->sig_t_vec;
-			all_sig_t_indx_vec[i] = local_b[local_index]->sig_t_indx_vec;
-		}
-		else
-		{
-			all_sig_t_vec[i] = nullptr;
-			all_sig_t_indx_vec[i] = nullptr;
-		}
+		Bacteria *local_b = new Bacteria(&bacteria_name[i * NAME_SIZE]);
+		all_counts[i] = local_b->count;
+		all_sig_t_vec[i] = local_b->sig_t_vec;
+		all_sig_t_indx_vec[i] = local_b->sig_t_indx_vec;
+		delete local_b;
 	}
 
 	MPI_Barrier(MPI_COMM_WORLD);
 
-	RetrieveBacteriaInfo(start, block_size, all_counts, local_b, all_sig_t_vec, all_sig_t_indx_vec);
+	// auto end = std::chrono::high_resolution_clock::now();
+	// std::chrono::duration<double> elapsed = end - time_start;
+	// if (rank == 0) std::cout << "Bacteria creation time elapsed: " << elapsed.count() << " seconds\n";
+
+	RetrieveBacteriaInfo(block_size, all_counts, all_sig_t_vec, all_sig_t_indx_vec);
 	CreateSummaries(all_counts, all_sig_t_vec, all_sig_t_indx_vec, summaries);
 
-	for (int i = rank; i < number_bacteria; i += size)
-	{
-		for (int j = i + 1; j < number_bacteria; j++)
-		{
-			double correlation = CompareBacteria(summaries[i], summaries[j]);
-			printf("Rank %d: %2d %2d -> %.20lf\n", rank, i, j, correlation);
-			fflush(stdout);
-		}
-	}
+	// auto time_start = std::chrono::high_resolution_clock::now();
+	SplitBacteria(summaries, 0);
 
 	MPI_Barrier(MPI_COMM_WORLD);
+
+	// auto time_end = std::chrono::high_resolution_clock::now();
+	// std::chrono::duration<double> elapsed = time_end - time_start;
+	// if (rank == 0)
+	// 	std::cout << "Bacteria comparision time elapsed: " << elapsed.count() << " seconds\n";
+	// FreeBacteria(summaries, local_b, all_counts, all_sig_t_vec, all_sig_t_indx_vec);
 }
 
 int main(int argc, char *argv[])

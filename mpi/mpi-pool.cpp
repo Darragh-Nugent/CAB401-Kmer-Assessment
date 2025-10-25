@@ -432,7 +432,7 @@ void CompareAllBacteria()
 
     BacteriaSummary **summaries = new BacteriaSummary *[number_bacteria];
 
-    // RetrieveBacteriaInfo(all_counts, local_b, all_sig_t_vec, all_sig_t_indx_vec);
+    // RetrieveBacteriaInfo(all_counts, all_sig_t_vec, all_sig_t_indx_vec);
     CreateSummaries(all_counts, all_sig_t_vec, all_sig_t_indx_vec, summaries);
 
     for (int i = rank; i < number_bacteria - 1; i += size)
