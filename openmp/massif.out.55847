@@ -1,0 +1,922 @@
+desc: (none)
+cmd: ./openmp
+time_unit: i
+#-----------
+snapshot=0
+#-----------
+time=0
+mem_heap_B=0
+mem_heap_extra_B=0
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=1
+#-----------
+time=1219661202
+mem_heap_B=1612913190
+mem_heap_extra_B=24978
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=2
+#-----------
+time=1979031048
+mem_heap_B=2688117990
+mem_heap_extra_B=41178
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=3
+#-----------
+time=3276386866
+mem_heap_B=2688117990
+mem_heap_extra_B=41178
+mem_stacks_B=0
+heap_tree=detailed
+n4: 2688117990 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 2048000000 0x10AD8E: Bacteria::Bacteria(char*) (in /home/bosco/src/CAB401/CAB401-Kmer-Assessment/openmp/openmp)
+  n2: 2048000000 0x10A74E: CompareAllBacteria() [clone ._omp_fn.0] (in /home/bosco/src/CAB401/CAB401-Kmer-Assessment/openmp/openmp)
+   n1: 1536000000 0x52CB79E: ??? (in /usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0)
+    n1: 1536000000 0x539BAA3: start_thread (pthread_create.c:447)
+     n0: 1536000000 0x5428A63: clone (clone.S:100)
+   n1: 512000000 0x52C1976: GOMP_parallel (in /usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0)
+    n1: 512000000 0x10AC61: CompareAllBacteria() (in /home/bosco/src/CAB401/CAB401-Kmer-Assessment/openmp/openmp)
+     n0: 512000000 0x10A498: main (in /home/bosco/src/CAB401/CAB401-Kmer-Assessment/openmp/openmp)
+ n1: 512000000 0x10AFAC: Bacteria::Bacteria(char*) (in /home/bosco/src/CAB401/CAB401-Kmer-Assessment/openmp/openmp)
+  n1: 512000000 0x10A74E: CompareAllBacteria() [clone ._omp_fn.0] (in /home/bosco/src/CAB401/CAB401-Kmer-Assessment/openmp/openmp)
+   n1: 512000000 0x52CB79E: ??? (in /usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0)
+    n1: 512000000 0x539BAA3: start_thread (pthread_create.c:447)
+     n0: 512000000 0x5428A63: clone (clone.S:100)
+ n1: 102400000 0x10ADB1: Bacteria::Bacteria(char*) (in /home/bosco/src/CAB401/CAB401-Kmer-Assessment/openmp/openmp)
+  n2: 102400000 0x10A74E: CompareAllBacteria() [clone ._omp_fn.0] (in /home/bosco/src/CAB401/CAB401-Kmer-Assessment/openmp/openmp)
+   n1: 76800000 0x52CB79E: ??? (in /usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0)
+    n1: 76800000 0x539BAA3: start_thread (pthread_create.c:447)
+     n0: 76800000 0x5428A63: clone (clone.S:100)
+   n0: 25600000 in 1 place, below massif's threshold (1.00%)
+ n0: 25717990 in 14 places, all below massif's threshold (1.00%)
+#-----------
+snapshot=4
+#-----------
+time=4480475356
+mem_heap_B=2717324174
+mem_heap_extra_B=47066
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=5
+#-----------
+time=5731443158
+mem_heap_B=2691724174
+mem_heap_extra_B=43026
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=6
+#-----------
+time=6658339240
+mem_heap_B=2198079950
+mem_heap_extra_B=42106
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=7
+#-----------
+time=8102602556
+mem_heap_B=2709007134
+mem_heap_extra_B=45762
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=8
+#-----------
+time=9068038121
+mem_heap_B=2683407134
+mem_heap_extra_B=41722
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=9
+#-----------
+time=10377267152
+mem_heap_B=1720112758
+mem_heap_extra_B=42114
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=10
+#-----------
+time=11770846282
+mem_heap_B=1717798118
+mem_heap_extra_B=43194
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=11
+#-----------
+time=13191319894
+mem_heap_B=1205798118
+mem_heap_extra_B=39154
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=12
+#-----------
+time=14807400996
+mem_heap_B=1738555302
+mem_heap_extra_B=49010
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=13
+#-----------
+time=16101626229
+mem_heap_B=2839364198
+mem_heap_extra_B=69258
+mem_stacks_B=0
+heap_tree=detailed
+n6: 2839364198 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 2048000000 0x10AD8E: Bacteria::Bacteria(char*) (in /home/bosco/src/CAB401/CAB401-Kmer-Assessment/openmp/openmp)
+  n2: 2048000000 0x10A74E: CompareAllBacteria() [clone ._omp_fn.0] (in /home/bosco/src/CAB401/CAB401-Kmer-Assessment/openmp/openmp)
+   n1: 1536000000 0x52CB79E: ??? (in /usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0)
+    n1: 1536000000 0x539BAA3: start_thread (pthread_create.c:447)
+     n0: 1536000000 0x5428A63: clone (clone.S:100)
+   n1: 512000000 0x52C1976: GOMP_parallel (in /usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0)
+    n1: 512000000 0x10AC61: CompareAllBacteria() (in /home/bosco/src/CAB401/CAB401-Kmer-Assessment/openmp/openmp)
+     n0: 512000000 0x10A498: main (in /home/bosco/src/CAB401/CAB401-Kmer-Assessment/openmp/openmp)
+ n1: 512000000 0x10AFAC: Bacteria::Bacteria(char*) (in /home/bosco/src/CAB401/CAB401-Kmer-Assessment/openmp/openmp)
+  n2: 512000000 0x10A74E: CompareAllBacteria() [clone ._omp_fn.0] (in /home/bosco/src/CAB401/CAB401-Kmer-Assessment/openmp/openmp)
+   n1: 512000000 0x52CB79E: ??? (in /usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0)
+    n1: 512000000 0x539BAA3: start_thread (pthread_create.c:447)
+     n0: 512000000 0x5428A63: clone (clone.S:100)
+   n0: 0 in 1 place, below massif's threshold (1.00%)
+ n1: 102400000 0x10ADB1: Bacteria::Bacteria(char*) (in /home/bosco/src/CAB401/CAB401-Kmer-Assessment/openmp/openmp)
+  n2: 102400000 0x10A74E: CompareAllBacteria() [clone ._omp_fn.0] (in /home/bosco/src/CAB401/CAB401-Kmer-Assessment/openmp/openmp)
+   n1: 76800000 0x52CB79E: ??? (in /usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0)
+    n1: 76800000 0x539BAA3: start_thread (pthread_create.c:447)
+     n0: 76800000 0x5428A63: clone (clone.S:100)
+   n0: 25600000 in 1 place, below massif's threshold (1.00%)
+ n1: 75622408 0x10B0CF: Bacteria::Bacteria(char*) (in /home/bosco/src/CAB401/CAB401-Kmer-Assessment/openmp/openmp)
+  n2: 75622408 0x10A74E: CompareAllBacteria() [clone ._omp_fn.0] (in /home/bosco/src/CAB401/CAB401-Kmer-Assessment/openmp/openmp)
+   n1: 63360864 0x52CB79E: ??? (in /usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0)
+    n1: 63360864 0x539BAA3: start_thread (pthread_create.c:447)
+     n0: 63360864 0x5428A63: clone (clone.S:100)
+   n0: 12261544 in 1 place, below massif's threshold (1.00%)
+ n1: 75622408 0x10B0EF: Bacteria::Bacteria(char*) (in /home/bosco/src/CAB401/CAB401-Kmer-Assessment/openmp/openmp)
+  n2: 75622408 0x10A74E: CompareAllBacteria() [clone ._omp_fn.0] (in /home/bosco/src/CAB401/CAB401-Kmer-Assessment/openmp/openmp)
+   n1: 63360864 0x52CB79E: ??? (in /usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0)
+    n1: 63360864 0x539BAA3: start_thread (pthread_create.c:447)
+     n0: 63360864 0x5428A63: clone (clone.S:100)
+   n0: 12261544 in 1 place, below massif's threshold (1.00%)
+ n0: 25719382 in 14 places, all below massif's threshold (1.00%)
+#-----------
+snapshot=14
+#-----------
+time=17303561288
+mem_heap_B=2813764198
+mem_heap_extra_B=65218
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=15
+#-----------
+time=18855763539
+mem_heap_B=3382698366
+mem_heap_extra_B=77386
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=16
+#-----------
+time=20166818526
+mem_heap_B=3382702462
+mem_heap_extra_B=77394
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=17
+#-----------
+time=22000509201
+mem_heap_B=2456395254
+mem_heap_extra_B=65570
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=18
+#-----------
+time=23294803654
+mem_heap_B=2430795254
+mem_heap_extra_B=61530
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=19
+#-----------
+time=24895105440
+mem_heap_B=2503039798
+mem_heap_extra_B=70698
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=20
+#-----------
+time=26038518435
+mem_heap_B=3578240502
+mem_heap_extra_B=86890
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=21
+#-----------
+time=27327288308
+mem_heap_B=3578240502
+mem_heap_extra_B=86890
+mem_stacks_B=0
+heap_tree=detailed
+n7: 3578240502 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 2048000000 0x10AD8E: Bacteria::Bacteria(char*) (in /home/bosco/src/CAB401/CAB401-Kmer-Assessment/openmp/openmp)
+  n2: 2048000000 0x10A74E: CompareAllBacteria() [clone ._omp_fn.0] (in /home/bosco/src/CAB401/CAB401-Kmer-Assessment/openmp/openmp)
+   n1: 1536000000 0x52CB79E: ??? (in /usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0)
+    n1: 1536000000 0x539BAA3: start_thread (pthread_create.c:447)
+     n0: 1536000000 0x5428A63: clone (clone.S:100)
+   n1: 512000000 0x52C1976: GOMP_parallel (in /usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0)
+    n1: 512000000 0x10AC61: CompareAllBacteria() (in /home/bosco/src/CAB401/CAB401-Kmer-Assessment/openmp/openmp)
+     n0: 512000000 0x10A498: main (in /home/bosco/src/CAB401/CAB401-Kmer-Assessment/openmp/openmp)
+ n1: 1024000000 0x10AFAC: Bacteria::Bacteria(char*) (in /home/bosco/src/CAB401/CAB401-Kmer-Assessment/openmp/openmp)
+  n2: 1024000000 0x10A74E: CompareAllBacteria() [clone ._omp_fn.0] (in /home/bosco/src/CAB401/CAB401-Kmer-Assessment/openmp/openmp)
+   n1: 1024000000 0x52CB79E: ??? (in /usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0)
+    n1: 1024000000 0x539BAA3: start_thread (pthread_create.c:447)
+     n0: 1024000000 0x5428A63: clone (clone.S:100)
+   n0: 0 in 1 place, below massif's threshold (1.00%)
+ n1: 176260096 0x10B0CF: Bacteria::Bacteria(char*) (in /home/bosco/src/CAB401/CAB401-Kmer-Assessment/openmp/openmp)
+  n2: 176260096 0x10A74E: CompareAllBacteria() [clone ._omp_fn.0] (in /home/bosco/src/CAB401/CAB401-Kmer-Assessment/openmp/openmp)
+   n1: 153476512 0x52CB79E: ??? (in /usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0)
+    n1: 153476512 0x539BAA3: start_thread (pthread_create.c:447)
+     n0: 153476512 0x5428A63: clone (clone.S:100)
+   n0: 22783584 in 1 place, below massif's threshold (1.00%)
+ n1: 176260096 0x10B0EF: Bacteria::Bacteria(char*) (in /home/bosco/src/CAB401/CAB401-Kmer-Assessment/openmp/openmp)
+  n2: 176260096 0x10A74E: CompareAllBacteria() [clone ._omp_fn.0] (in /home/bosco/src/CAB401/CAB401-Kmer-Assessment/openmp/openmp)
+   n1: 153476512 0x52CB79E: ??? (in /usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0)
+    n1: 153476512 0x539BAA3: start_thread (pthread_create.c:447)
+     n0: 153476512 0x5428A63: clone (clone.S:100)
+   n0: 22783584 in 1 place, below massif's threshold (1.00%)
+ n1: 102400000 0x10ADB1: Bacteria::Bacteria(char*) (in /home/bosco/src/CAB401/CAB401-Kmer-Assessment/openmp/openmp)
+  n2: 102400000 0x10A74E: CompareAllBacteria() [clone ._omp_fn.0] (in /home/bosco/src/CAB401/CAB401-Kmer-Assessment/openmp/openmp)
+   n1: 76800000 0x52CB79E: ??? (in /usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0)
+    n1: 76800000 0x539BAA3: start_thread (pthread_create.c:447)
+     n0: 76800000 0x5428A63: clone (clone.S:100)
+   n0: 25600000 in 1 place, below massif's threshold (1.00%)
+ n1: 51200000 0x10AF34: Bacteria::Bacteria(char*) (in /home/bosco/src/CAB401/CAB401-Kmer-Assessment/openmp/openmp)
+  n2: 51200000 0x10A74E: CompareAllBacteria() [clone ._omp_fn.0] (in /home/bosco/src/CAB401/CAB401-Kmer-Assessment/openmp/openmp)
+   n1: 51200000 0x52CB79E: ??? (in /usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0)
+    n1: 51200000 0x539BAA3: start_thread (pthread_create.c:447)
+     n0: 51200000 0x5428A63: clone (clone.S:100)
+   n0: 0 in 1 place, below massif's threshold (1.00%)
+ n0: 120310 in 13 places, all below massif's threshold (1.00%)
+#-----------
+snapshot=22
+#-----------
+time=28533835702
+mem_heap_B=3001925974
+mem_heap_extra_B=70802
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=23
+#-----------
+time=29883544341
+mem_heap_B=2976325974
+mem_heap_extra_B=66762
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=24
+#-----------
+time=30732073751
+mem_heap_B=1460085518
+mem_heap_extra_B=57434
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=25
+#-----------
+time=32025812508
+mem_heap_B=1434485518
+mem_heap_extra_B=53394
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=26
+#-----------
+time=33043654398
+mem_heap_B=1479648678
+mem_heap_extra_B=57642
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=27
+#-----------
+time=34338672843
+mem_heap_B=1454048678
+mem_heap_extra_B=53602
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=28
+#-----------
+time=36006300385
+mem_heap_B=2577827326
+mem_heap_extra_B=77954
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=29
+#-----------
+time=37125307663
+mem_heap_B=2577827558
+mem_heap_extra_B=77970
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=30
+#-----------
+time=38625889159
+mem_heap_B=2600833406
+mem_heap_extra_B=83842
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=31
+#-----------
+time=39942916245
+mem_heap_B=3087233406
+mem_heap_extra_B=83842
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=32
+#-----------
+time=41537569701
+mem_heap_B=2622759542
+mem_heap_extra_B=91914
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=33
+#-----------
+time=42854024715
+mem_heap_B=3134754974
+mem_heap_extra_B=95930
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=34
+#-----------
+time=44278661813
+mem_heap_B=2082033838
+mem_heap_extra_B=81138
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=35
+#-----------
+time=45608669984
+mem_heap_B=2568433838
+mem_heap_extra_B=81138
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=36
+#-----------
+time=46910316499
+mem_heap_B=1088971718
+mem_heap_extra_B=71466
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=37
+#-----------
+time=47979999799
+mem_heap_B=2727377222
+mem_heap_extra_B=99818
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=38
+#-----------
+time=49462416670
+mem_heap_B=2723395430
+mem_heap_extra_B=96146
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=39
+#-----------
+time=50779459796
+mem_heap_B=3209795430
+mem_heap_extra_B=96146
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=40
+#-----------
+time=51337915790
+mem_heap_B=2719773110
+mem_heap_extra_B=97554
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=41
+#-----------
+time=52654565445
+mem_heap_B=3206173110
+mem_heap_extra_B=97554
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=42
+#-----------
+time=53427601635
+mem_heap_B=1153487238
+mem_heap_extra_B=84490
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=43
+#-----------
+time=54730023690
+mem_heap_B=2254292974
+mem_heap_extra_B=104778
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=44
+#-----------
+time=56059190709
+mem_heap_B=2766297070
+mem_heap_extra_B=108826
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=45
+#-----------
+time=57148734542
+mem_heap_B=2789968030
+mem_heap_extra_B=116738
+mem_stacks_B=0
+heap_tree=detailed
+n6: 2789968030 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 1536000000 0x10AD8E: Bacteria::Bacteria(char*) (in /home/bosco/src/CAB401/CAB401-Kmer-Assessment/openmp/openmp)
+  n2: 1536000000 0x10A74E: CompareAllBacteria() [clone ._omp_fn.0] (in /home/bosco/src/CAB401/CAB401-Kmer-Assessment/openmp/openmp)
+   n1: 1024000000 0x52CB79E: ??? (in /usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0)
+    n1: 1024000000 0x539BAA3: start_thread (pthread_create.c:447)
+     n0: 1024000000 0x5428A63: clone (clone.S:100)
+   n1: 512000000 0x52C1976: GOMP_parallel (in /usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0)
+    n1: 512000000 0x10AC61: CompareAllBacteria() (in /home/bosco/src/CAB401/CAB401-Kmer-Assessment/openmp/openmp)
+     n0: 512000000 0x10A498: main (in /home/bosco/src/CAB401/CAB401-Kmer-Assessment/openmp/openmp)
+ n1: 512000000 0x10AFAC: Bacteria::Bacteria(char*) (in /home/bosco/src/CAB401/CAB401-Kmer-Assessment/openmp/openmp)
+  n2: 512000000 0x10A74E: CompareAllBacteria() [clone ._omp_fn.0] (in /home/bosco/src/CAB401/CAB401-Kmer-Assessment/openmp/openmp)
+   n1: 512000000 0x52CB79E: ??? (in /usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0)
+    n1: 512000000 0x539BAA3: start_thread (pthread_create.c:447)
+     n0: 512000000 0x5428A63: clone (clone.S:100)
+   n0: 0 in 1 place, below massif's threshold (1.00%)
+ n1: 319720304 0x10B0CF: Bacteria::Bacteria(char*) (in /home/bosco/src/CAB401/CAB401-Kmer-Assessment/openmp/openmp)
+  n2: 319720304 0x10A74E: CompareAllBacteria() [clone ._omp_fn.0] (in /home/bosco/src/CAB401/CAB401-Kmer-Assessment/openmp/openmp)
+   n1: 278931544 0x52CB79E: ??? (in /usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0)
+    n1: 278931544 0x539BAA3: start_thread (pthread_create.c:447)
+     n0: 278931544 0x5428A63: clone (clone.S:100)
+   n1: 40788760 0x52C1976: GOMP_parallel (in /usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0)
+    n1: 40788760 0x10AC61: CompareAllBacteria() (in /home/bosco/src/CAB401/CAB401-Kmer-Assessment/openmp/openmp)
+     n0: 40788760 0x10A498: main (in /home/bosco/src/CAB401/CAB401-Kmer-Assessment/openmp/openmp)
+ n1: 319720304 0x10B0EF: Bacteria::Bacteria(char*) (in /home/bosco/src/CAB401/CAB401-Kmer-Assessment/openmp/openmp)
+  n2: 319720304 0x10A74E: CompareAllBacteria() [clone ._omp_fn.0] (in /home/bosco/src/CAB401/CAB401-Kmer-Assessment/openmp/openmp)
+   n1: 278931544 0x52CB79E: ??? (in /usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0)
+    n1: 278931544 0x539BAA3: start_thread (pthread_create.c:447)
+     n0: 278931544 0x5428A63: clone (clone.S:100)
+   n1: 40788760 0x52C1976: GOMP_parallel (in /usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0)
+    n1: 40788760 0x10AC61: CompareAllBacteria() (in /home/bosco/src/CAB401/CAB401-Kmer-Assessment/openmp/openmp)
+     n0: 40788760 0x10A498: main (in /home/bosco/src/CAB401/CAB401-Kmer-Assessment/openmp/openmp)
+ n1: 76800000 0x10ADB1: Bacteria::Bacteria(char*) (in /home/bosco/src/CAB401/CAB401-Kmer-Assessment/openmp/openmp)
+  n2: 76800000 0x10A74E: CompareAllBacteria() [clone ._omp_fn.0] (in /home/bosco/src/CAB401/CAB401-Kmer-Assessment/openmp/openmp)
+   n1: 51200000 0x52CB79E: ??? (in /usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0)
+    n1: 51200000 0x539BAA3: start_thread (pthread_create.c:447)
+     n0: 51200000 0x5428A63: clone (clone.S:100)
+   n0: 25600000 in 1 place, below massif's threshold (1.00%)
+ n0: 25727422 in 14 places, all below massif's threshold (1.00%)
+#-----------
+snapshot=46
+#-----------
+time=58284571897
+mem_heap_B=3353168262
+mem_heap_extra_B=128874
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=47
+#-----------
+time=59562819886
+mem_heap_B=2297439430
+mem_heap_extra_B=113818
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=48
+#-----------
+time=60883028548
+mem_heap_B=2809434862
+mem_heap_extra_B=117834
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=49
+#-----------
+time=62450076579
+mem_heap_B=2779492446
+mem_heap_extra_B=110298
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=50
+#-----------
+time=63065483413
+mem_heap_B=2803111814
+mem_heap_extra_B=113426
+mem_stacks_B=0
+heap_tree=detailed
+n5: 2803111814 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 1024000000 0x10AD8E: Bacteria::Bacteria(char*) (in /home/bosco/src/CAB401/CAB401-Kmer-Assessment/openmp/openmp)
+  n2: 1024000000 0x10A74E: CompareAllBacteria() [clone ._omp_fn.0] (in /home/bosco/src/CAB401/CAB401-Kmer-Assessment/openmp/openmp)
+   n1: 1024000000 0x52CB79E: ??? (in /usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0)
+    n1: 1024000000 0x539BAA3: start_thread (pthread_create.c:447)
+     n0: 1024000000 0x5428A63: clone (clone.S:100)
+   n0: 0 in 1 place, below massif's threshold (1.00%)
+ n1: 1024000000 0x10AFAC: Bacteria::Bacteria(char*) (in /home/bosco/src/CAB401/CAB401-Kmer-Assessment/openmp/openmp)
+  n2: 1024000000 0x10A74E: CompareAllBacteria() [clone ._omp_fn.0] (in /home/bosco/src/CAB401/CAB401-Kmer-Assessment/openmp/openmp)
+   n1: 1024000000 0x52CB79E: ??? (in /usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0)
+    n1: 1024000000 0x539BAA3: start_thread (pthread_create.c:447)
+     n0: 1024000000 0x5428A63: clone (clone.S:100)
+   n0: 0 in 1 place, below massif's threshold (1.00%)
+ n1: 351895944 0x10B0CF: Bacteria::Bacteria(char*) (in /home/bosco/src/CAB401/CAB401-Kmer-Assessment/openmp/openmp)
+  n2: 351895944 0x10A74E: CompareAllBacteria() [clone ._omp_fn.0] (in /home/bosco/src/CAB401/CAB401-Kmer-Assessment/openmp/openmp)
+   n1: 301371600 0x52CB79E: ??? (in /usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0)
+    n1: 301371600 0x539BAA3: start_thread (pthread_create.c:447)
+     n0: 301371600 0x5428A63: clone (clone.S:100)
+   n1: 50524344 0x52C1976: GOMP_parallel (in /usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0)
+    n1: 50524344 0x10AC61: CompareAllBacteria() (in /home/bosco/src/CAB401/CAB401-Kmer-Assessment/openmp/openmp)
+     n0: 50524344 0x10A498: main (in /home/bosco/src/CAB401/CAB401-Kmer-Assessment/openmp/openmp)
+ n1: 351895944 0x10B0EF: Bacteria::Bacteria(char*) (in /home/bosco/src/CAB401/CAB401-Kmer-Assessment/openmp/openmp)
+  n2: 351895944 0x10A74E: CompareAllBacteria() [clone ._omp_fn.0] (in /home/bosco/src/CAB401/CAB401-Kmer-Assessment/openmp/openmp)
+   n1: 301371600 0x52CB79E: ??? (in /usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0)
+    n1: 301371600 0x539BAA3: start_thread (pthread_create.c:447)
+     n0: 301371600 0x5428A63: clone (clone.S:100)
+   n1: 50524344 0x52C1976: GOMP_parallel (in /usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0)
+    n1: 50524344 0x10AC61: CompareAllBacteria() (in /home/bosco/src/CAB401/CAB401-Kmer-Assessment/openmp/openmp)
+     n0: 50524344 0x10A498: main (in /home/bosco/src/CAB401/CAB401-Kmer-Assessment/openmp/openmp)
+ n0: 51319926 in 15 places, all below massif's threshold (1.00%)
+#-----------
+snapshot=51
+#-----------
+time=63772025389
+mem_heap_B=2316715910
+mem_heap_extra_B=113434
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=52
+#-----------
+time=64335502145
+mem_heap_B=3391915438
+mem_heap_extra_B=129578
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=53
+#-----------
+time=65861207030
+mem_heap_B=3391915670
+mem_heap_extra_B=129594
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=54
+#-----------
+time=67324966171
+mem_heap_B=3929520238
+mem_heap_extra_B=137698
+mem_stacks_B=0
+heap_tree=peak
+n7: 3929520238 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 2048000000 0x10AD8E: Bacteria::Bacteria(char*) (in /home/bosco/src/CAB401/CAB401-Kmer-Assessment/openmp/openmp)
+  n2: 2048000000 0x10A74E: CompareAllBacteria() [clone ._omp_fn.0] (in /home/bosco/src/CAB401/CAB401-Kmer-Assessment/openmp/openmp)
+   n1: 1536000000 0x52CB79E: ??? (in /usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0)
+    n1: 1536000000 0x539BAA3: start_thread (pthread_create.c:447)
+     n0: 1536000000 0x5428A63: clone (clone.S:100)
+   n1: 512000000 0x52C1976: GOMP_parallel (in /usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0)
+    n1: 512000000 0x10AC61: CompareAllBacteria() (in /home/bosco/src/CAB401/CAB401-Kmer-Assessment/openmp/openmp)
+     n0: 512000000 0x10A498: main (in /home/bosco/src/CAB401/CAB401-Kmer-Assessment/openmp/openmp)
+ n1: 1024000000 0x10AFAC: Bacteria::Bacteria(char*) (in /home/bosco/src/CAB401/CAB401-Kmer-Assessment/openmp/openmp)
+  n2: 1024000000 0x10A74E: CompareAllBacteria() [clone ._omp_fn.0] (in /home/bosco/src/CAB401/CAB401-Kmer-Assessment/openmp/openmp)
+   n1: 1024000000 0x52CB79E: ??? (in /usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0)
+    n1: 1024000000 0x539BAA3: start_thread (pthread_create.c:447)
+     n0: 1024000000 0x5428A63: clone (clone.S:100)
+   n0: 0 in 1 place, below massif's threshold (1.00%)
+ n1: 351895944 0x10B0CF: Bacteria::Bacteria(char*) (in /home/bosco/src/CAB401/CAB401-Kmer-Assessment/openmp/openmp)
+  n2: 351895944 0x10A74E: CompareAllBacteria() [clone ._omp_fn.0] (in /home/bosco/src/CAB401/CAB401-Kmer-Assessment/openmp/openmp)
+   n1: 301371600 0x52CB79E: ??? (in /usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0)
+    n1: 301371600 0x539BAA3: start_thread (pthread_create.c:447)
+     n0: 301371600 0x5428A63: clone (clone.S:100)
+   n1: 50524344 0x52C1976: GOMP_parallel (in /usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0)
+    n1: 50524344 0x10AC61: CompareAllBacteria() (in /home/bosco/src/CAB401/CAB401-Kmer-Assessment/openmp/openmp)
+     n0: 50524344 0x10A498: main (in /home/bosco/src/CAB401/CAB401-Kmer-Assessment/openmp/openmp)
+ n1: 351895944 0x10B0EF: Bacteria::Bacteria(char*) (in /home/bosco/src/CAB401/CAB401-Kmer-Assessment/openmp/openmp)
+  n2: 351895944 0x10A74E: CompareAllBacteria() [clone ._omp_fn.0] (in /home/bosco/src/CAB401/CAB401-Kmer-Assessment/openmp/openmp)
+   n1: 301371600 0x52CB79E: ??? (in /usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0)
+    n1: 301371600 0x539BAA3: start_thread (pthread_create.c:447)
+     n0: 301371600 0x5428A63: clone (clone.S:100)
+   n1: 50524344 0x52C1976: GOMP_parallel (in /usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0)
+    n1: 50524344 0x10AC61: CompareAllBacteria() (in /home/bosco/src/CAB401/CAB401-Kmer-Assessment/openmp/openmp)
+     n0: 50524344 0x10A498: main (in /home/bosco/src/CAB401/CAB401-Kmer-Assessment/openmp/openmp)
+ n1: 102400000 0x10ADB1: Bacteria::Bacteria(char*) (in /home/bosco/src/CAB401/CAB401-Kmer-Assessment/openmp/openmp)
+  n2: 102400000 0x10A74E: CompareAllBacteria() [clone ._omp_fn.0] (in /home/bosco/src/CAB401/CAB401-Kmer-Assessment/openmp/openmp)
+   n1: 76800000 0x52CB79E: ??? (in /usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0)
+    n1: 76800000 0x539BAA3: start_thread (pthread_create.c:447)
+     n0: 76800000 0x5428A63: clone (clone.S:100)
+   n0: 25600000 in 1 place, below massif's threshold (1.00%)
+ n1: 51200000 0x10AF34: Bacteria::Bacteria(char*) (in /home/bosco/src/CAB401/CAB401-Kmer-Assessment/openmp/openmp)
+  n2: 51200000 0x10A74E: CompareAllBacteria() [clone ._omp_fn.0] (in /home/bosco/src/CAB401/CAB401-Kmer-Assessment/openmp/openmp)
+   n1: 51200000 0x52CB79E: ??? (in /usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0)
+    n1: 51200000 0x539BAA3: start_thread (pthread_create.c:447)
+     n0: 51200000 0x5428A63: clone (clone.S:100)
+   n0: 0 in 1 place, below massif's threshold (1.00%)
+ n0: 128350 in 13 places, all below massif's threshold (1.00%)
+#-----------
+snapshot=55
+#-----------
+time=68255172999
+mem_heap_B=3410993262
+mem_heap_extra_B=139690
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=56
+#-----------
+time=69309894705
+mem_heap_B=3385393262
+mem_heap_extra_B=135650
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=57
+#-----------
+time=70695909402
+mem_heap_B=3359027886
+mem_heap_extra_B=130978
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=58
+#-----------
+time=71429612141
+mem_heap_B=1818890918
+mem_heap_extra_B=122162
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=59
+#-----------
+time=72103791127
+mem_heap_B=2382091622
+mem_heap_extra_B=134314
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=60
+#-----------
+time=73689251131
+mem_heap_B=2382087054
+mem_heap_extra_B=134290
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=61
+#-----------
+time=74762107028
+mem_heap_B=2416151150
+mem_heap_extra_B=137258
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=62
+#-----------
+time=76430062856
+mem_heap_B=2928155246
+mem_heap_extra_B=141306
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=63
+#-----------
+time=76991386299
+mem_heap_B=2436936374
+mem_heap_extra_B=143466
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=64
+#-----------
+time=77912321695
+mem_heap_B=2948936374
+mem_heap_extra_B=147506
+mem_stacks_B=0
+heap_tree=detailed
+n5: 2948936374 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 1024000000 0x10AD8E: Bacteria::Bacteria(char*) (in /home/bosco/src/CAB401/CAB401-Kmer-Assessment/openmp/openmp)
+  n2: 1024000000 0x10A74E: CompareAllBacteria() [clone ._omp_fn.0] (in /home/bosco/src/CAB401/CAB401-Kmer-Assessment/openmp/openmp)
+   n1: 512000000 0x52C1976: GOMP_parallel (in /usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0)
+    n1: 512000000 0x10AC61: CompareAllBacteria() (in /home/bosco/src/CAB401/CAB401-Kmer-Assessment/openmp/openmp)
+     n0: 512000000 0x10A498: main (in /home/bosco/src/CAB401/CAB401-Kmer-Assessment/openmp/openmp)
+   n1: 512000000 0x52CB79E: ??? (in /usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0)
+    n1: 512000000 0x539BAA3: start_thread (pthread_create.c:447)
+     n0: 512000000 0x5428A63: clone (clone.S:100)
+ n1: 1024000000 0x10AFAC: Bacteria::Bacteria(char*) (in /home/bosco/src/CAB401/CAB401-Kmer-Assessment/openmp/openmp)
+  n2: 1024000000 0x10A74E: CompareAllBacteria() [clone ._omp_fn.0] (in /home/bosco/src/CAB401/CAB401-Kmer-Assessment/openmp/openmp)
+   n1: 1024000000 0x52CB79E: ??? (in /usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0)
+    n1: 1024000000 0x539BAA3: start_thread (pthread_create.c:447)
+     n0: 1024000000 0x5428A63: clone (clone.S:100)
+   n0: 0 in 1 place, below massif's threshold (1.00%)
+ n1: 424807880 0x10B0CF: Bacteria::Bacteria(char*) (in /home/bosco/src/CAB401/CAB401-Kmer-Assessment/openmp/openmp)
+  n2: 424807880 0x10A74E: CompareAllBacteria() [clone ._omp_fn.0] (in /home/bosco/src/CAB401/CAB401-Kmer-Assessment/openmp/openmp)
+   n1: 351473728 0x52CB79E: ??? (in /usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0)
+    n1: 351473728 0x539BAA3: start_thread (pthread_create.c:447)
+     n0: 351473728 0x5428A63: clone (clone.S:100)
+   n1: 73334152 0x52C1976: GOMP_parallel (in /usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0)
+    n1: 73334152 0x10AC61: CompareAllBacteria() (in /home/bosco/src/CAB401/CAB401-Kmer-Assessment/openmp/openmp)
+     n0: 73334152 0x10A498: main (in /home/bosco/src/CAB401/CAB401-Kmer-Assessment/openmp/openmp)
+ n1: 424807880 0x10B0EF: Bacteria::Bacteria(char*) (in /home/bosco/src/CAB401/CAB401-Kmer-Assessment/openmp/openmp)
+  n2: 424807880 0x10A74E: CompareAllBacteria() [clone ._omp_fn.0] (in /home/bosco/src/CAB401/CAB401-Kmer-Assessment/openmp/openmp)
+   n1: 351473728 0x52CB79E: ??? (in /usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0)
+    n1: 351473728 0x539BAA3: start_thread (pthread_create.c:447)
+     n0: 351473728 0x5428A63: clone (clone.S:100)
+   n1: 73334152 0x52C1976: GOMP_parallel (in /usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0)
+    n1: 73334152 0x10AC61: CompareAllBacteria() (in /home/bosco/src/CAB401/CAB401-Kmer-Assessment/openmp/openmp)
+     n0: 73334152 0x10A498: main (in /home/bosco/src/CAB401/CAB401-Kmer-Assessment/openmp/openmp)
+ n0: 51320614 in 15 places, all below massif's threshold (1.00%)
+#-----------
+snapshot=65
+#-----------
+time=79096177487
+mem_heap_B=2430934870
+mem_heap_extra_B=140186
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=66
+#-----------
+time=80635286211
+mem_heap_B=1918926438
+mem_heap_extra_B=136130
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=67
+#-----------
+time=81370895576
+mem_heap_B=2495497350
+mem_heap_extra_B=147370
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=68
+#-----------
+time=81931159527
+mem_heap_B=3033101446
+mem_heap_extra_B=155458
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=69
+#-----------
+time=83135432192
+mem_heap_B=2521101446
+mem_heap_extra_B=151418
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=70
+#-----------
+time=84101494188
+mem_heap_B=2501549982
+mem_heap_extra_B=147426
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=71
+#-----------
+time=85463922738
+mem_heap_B=3013549982
+mem_heap_extra_B=151466
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=72
+#-----------
+time=86113117302
+mem_heap_B=1993509134
+mem_heap_extra_B=145010
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=73
+#-----------
+time=87441910546
+mem_heap_B=2505504566
+mem_heap_extra_B=149026
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=74
+#-----------
+time=88041782520
+mem_heap_B=1494884694
+mem_heap_extra_B=142394
+mem_stacks_B=0
+heap_tree=detailed
+n4: 1494884694 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 512000000 0x10AFAC: Bacteria::Bacteria(char*) (in /home/bosco/src/CAB401/CAB401-Kmer-Assessment/openmp/openmp)
+  n2: 512000000 0x10A74E: CompareAllBacteria() [clone ._omp_fn.0] (in /home/bosco/src/CAB401/CAB401-Kmer-Assessment/openmp/openmp)
+   n1: 512000000 0x52C1976: GOMP_parallel (in /usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0)
+    n1: 512000000 0x10AC61: CompareAllBacteria() (in /home/bosco/src/CAB401/CAB401-Kmer-Assessment/openmp/openmp)
+     n0: 512000000 0x10A498: main (in /home/bosco/src/CAB401/CAB401-Kmer-Assessment/openmp/openmp)
+   n0: 0 in 1 place, below massif's threshold (1.00%)
+ n1: 491381928 0x10B0CF: Bacteria::Bacteria(char*) (in /home/bosco/src/CAB401/CAB401-Kmer-Assessment/openmp/openmp)
+  n2: 491381928 0x10A74E: CompareAllBacteria() [clone ._omp_fn.0] (in /home/bosco/src/CAB401/CAB401-Kmer-Assessment/openmp/openmp)
+   n1: 379074656 0x52CB79E: ??? (in /usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0)
+    n1: 379074656 0x539BAA3: start_thread (pthread_create.c:447)
+     n0: 379074656 0x5428A63: clone (clone.S:100)
+   n1: 112307272 0x52C1976: GOMP_parallel (in /usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0)
+    n1: 112307272 0x10AC61: CompareAllBacteria() (in /home/bosco/src/CAB401/CAB401-Kmer-Assessment/openmp/openmp)
+     n0: 112307272 0x10A498: main (in /home/bosco/src/CAB401/CAB401-Kmer-Assessment/openmp/openmp)
+ n1: 491381928 0x10B0EF: Bacteria::Bacteria(char*) (in /home/bosco/src/CAB401/CAB401-Kmer-Assessment/openmp/openmp)
+  n2: 491381928 0x10A74E: CompareAllBacteria() [clone ._omp_fn.0] (in /home/bosco/src/CAB401/CAB401-Kmer-Assessment/openmp/openmp)
+   n1: 379074656 0x52CB79E: ??? (in /usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0)
+    n1: 379074656 0x539BAA3: start_thread (pthread_create.c:447)
+     n0: 379074656 0x5428A63: clone (clone.S:100)
+   n1: 112307272 0x52C1976: GOMP_parallel (in /usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0)
+    n1: 112307272 0x10AC61: CompareAllBacteria() (in /home/bosco/src/CAB401/CAB401-Kmer-Assessment/openmp/openmp)
+     n0: 112307272 0x10A498: main (in /home/bosco/src/CAB401/CAB401-Kmer-Assessment/openmp/openmp)
+ n0: 120838 in 16 places, all below massif's threshold (1.00%)
+#-----------
+snapshot=75
+#-----------
+time=88784789977
+mem_heap_B=2083681062
+mem_heap_extra_B=158578
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=76
+#-----------
+time=90116914862
+mem_heap_B=2570081062
+mem_heap_extra_B=158578
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=77
+#-----------
+time=90903073862
+mem_heap_B=1552790622
+mem_heap_extra_B=153738
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=78
+#-----------
+time=92223085832
+mem_heap_B=2064790622
+mem_heap_extra_B=157778
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=79
+#-----------
+time=93215017273
+mem_heap_B=1572767382
+mem_heap_extra_B=157402
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=80
+#-----------
+time=94537439835
+mem_heap_B=2084767382
+mem_heap_extra_B=161442
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=81
+#-----------
+time=140510452501
+mem_heap_B=1058708758
+mem_heap_extra_B=149298
+mem_stacks_B=0
+heap_tree=empty

@@ -1,0 +1,24 @@
+Please keep the relative paths for all files the same. Data will automatically be read form the current directory
+
+Code must be ran in a Linux distibution.
+
+
+For OpenMP
+Compile: g++ -O2 -fopenmp -o openmp openmp.cpp
+Run: ./openmp N
+* Where N is the number of threads
+
+For C++ threads
+Compile: g++ -O2 -o cppthreads cppthreads.cpp
+Run: ./cppthreads N
+* Where N is the number of threads
+
+For MPI
+Compile: mpic++ -o mpi mpi.cpp
+Run: mpirun -np N ./mpi
+* Where N is the number of threads
+
+For verification
+Compile: g++ -O2 -o verify verify.cpp
+Run: ./verify FILE1 File2
+* Where FILE1 is the relative path the the first text file you want to compare and FILE2 is the relative path the the second text file you want to compare
