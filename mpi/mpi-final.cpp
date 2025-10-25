@@ -36,156 +36,169 @@ struct BacteriaSummary
 
 void Init()
 {
-    M_4 = 1;
-    for (int i = 0; i < LEN - 2; i++) // M_4 = AA_NUMBER ^ (LEN-2);
-        M_4 *= AA_NUMBER;
-    M_5 = M_4 * AA_NUMBER; // M_5 = AA_NUMBER ^ (LEN-1);
-    M_6 = M_5 * AA_NUMBER; // M_6  = AA_NUMBER ^ (LEN);
+	M_4 = 1;
+	for (int i = 0; i < LEN - 2; i++) // M_4 = AA_NUMBER ^ (LEN-2);
+		M_4 *= AA_NUMBER;
+	M_5 = M_4 * AA_NUMBER; // M_5 = AA_NUMBER ^ (LEN-1);
+	M_6 = M_5 * AA_NUMBER; // M_6  = AA_NUMBER ^ (LEN);
 }
 
 class Bacteria
 {
 private:
-    long *mers_6;
-    long *mers_5;
-    long mers_1[AA_NUMBER];
-    long indexs;
-    long total_mers_6;
-    long total_mers_1;
-    long complement;
+	long *mers_6;
+	long *mers_5;
+	long mers_1[AA_NUMBER];
+	long indexs;
+	long total_mers_6;
+	long total_mers_1;
+	long complement;
 
-    void InitVectors()
-    {
-        mers_6 = new long[M_6];
-        mers_5 = new long[M_5];
-        memset(mers_6, 0, M_6 * sizeof(long));
-        memset(mers_5, 0, M_5 * sizeof(long));
-        memset(mers_1, 0, AA_NUMBER * sizeof(long));
-        total_mers_6 = 0;
-        total_mers_1 = 0;
-        complement = 0;
-    }
+	void InitVectors()
+	{
+		mers_6 = new long[M_6];
+		mers_5 = new long[M_5];
+		memset(mers_6, 0, M_6 * sizeof(long));
+		memset(mers_5, 0, M_5 * sizeof(long));
+		memset(mers_1, 0, AA_NUMBER * sizeof(long));
+		total_mers_6 = 0;
+		total_mers_1 = 0;
+		complement = 0;
+	}
 
-    void init_buffer(char *buffer)
-    {
-        complement++;
-        indexs = 0;
-        for (int i = 0; i < LEN - 1; i++)
-        {
-            short enc = encode(buffer[i]);
-            mers_1[enc]++;
-            total_mers_1++;
-            indexs = indexs * AA_NUMBER + enc;
-        }
-        mers_5[indexs]++;
-    }
+	void init_buffer(char *buffer)
+	{
+		complement++;
+		indexs = 0;
+		for (int i = 0; i < LEN - 1; i++)
+		{
+			short enc = encode(buffer[i]);
+			mers_1[enc]++;
+			total_mers_1++;
+			indexs = indexs * AA_NUMBER + enc;
+		}
+		mers_5[indexs]++;
+	}
 
-    void cont_buffer(char ch)
-    {
-        short enc = encode(ch);
-        mers_1[enc]++;
-        total_mers_1++;
-        long index = indexs * AA_NUMBER + enc;
-        mers_6[index]++;
-        total_mers_6++;
-        indexs = (indexs % M_4) * AA_NUMBER + enc;
-        mers_5[indexs]++;
-    }
+	void cont_buffer(char ch)
+	{
+		short enc = encode(ch);
+		mers_1[enc]++;
+		total_mers_1++;
+		long index = indexs * AA_NUMBER + enc;
+		mers_6[index]++;
+		total_mers_6++;
+		indexs = (indexs % M_4) * AA_NUMBER + enc;
+		mers_5[indexs]++;
+	}
 
 public:
-    long count;
-    // double *sig_t_vec;
-    // long *sig_t_indx_vec;
+	long count;
+	double *sig_t_vec;
+	long *sig_t_indx_vec;
 
-    std::vector<double> sig_t_vec;
-    std::vector<long> sig_t_indx_vec;
+	// std::vector<double> sig_t_vec;
+	// std::vector<long> sig_t_indx_vec;
 
-    Bacteria(char *filename)
-    {
-        FILE *bacteria_file = fopen(filename, "r");
-        if (bacteria_file == NULL)
-        {
-            fprintf(stderr, "Error: failed to open file %s\n", filename);
-            exit(1);
-        }
+	Bacteria(char *filename)
+	{
+		FILE *bacteria_file = fopen(filename, "r");
+		if (bacteria_file == NULL)
+		{
+			fprintf(stderr, "Error: failed to open file %s\n", filename);
+			exit(1);
+		}
 
-        InitVectors();
+		InitVectors();
 
-        char ch;
-        while ((ch = fgetc(bacteria_file)) != EOF)
-        {
-            if (ch == '>')
-            {
-                while (fgetc(bacteria_file) != '\n')
-                    ; // skip rest of line
+		char ch;
+		while ((ch = fgetc(bacteria_file)) != EOF)
+		{
+			if (ch == '>')
+			{
+				while (fgetc(bacteria_file) != '\n')
+					; // skip rest of line
 
-                char buffer[LEN - 1];
-                fread(buffer, sizeof(char), LEN - 1, bacteria_file);
-                init_buffer(buffer);
-            }
-            else if (ch != '\n' && ch != '\r')
-                cont_buffer(ch);
-        }
+				char buffer[LEN - 1];
+				fread(buffer, sizeof(char), LEN - 1, bacteria_file);
+				init_buffer(buffer);
+			}
+			else if (ch != '\n' && ch != '\r')
+				cont_buffer(ch);
+		}
 
-        long total_plus_complement = total_mers_6 + complement;
-        double total_div_2 = total_mers_6 * 0.5;
-        int i_mod_aa_number = 0;
-        int i_div_aa_number = 0;
-        long i_mod_M1 = 0;
-        long i_div_M1 = 0;
+		long total_plus_complement = total_mers_6 + complement;
+		double total_div_2 = total_mers_6 * 0.5;
+		int i_mod_aa_number = 0;
+		int i_div_aa_number = 0;
+		long i_mod_M1 = 0;
+		long i_div_M1 = 0;
 
-        double one_l_div_total[AA_NUMBER];
-        for (int i = 0; i < AA_NUMBER; i++)
-            one_l_div_total[i] = (double)mers_1[i] / total_mers_1;
+		double one_l_div_total[AA_NUMBER];
+		for (int i = 0; i < AA_NUMBER; i++)
+			one_l_div_total[i] = (double)mers_1[i] / total_mers_1;
 
-        double *mers_5_div_total = new double[M_5];
-        for (int i = 0; i < M_5; i++)
-            mers_5_div_total[i] = (double)mers_5[i] / total_plus_complement;
+		double *mers_5_div_total = new double[M_5];
+		for (int i = 0; i < M_5; i++)
+			mers_5_div_total[i] = (double)mers_5[i] / total_plus_complement;
 
-        count = 0;
+		count = 0;
+		double *t = new double[M_6];
 
-        // std::map<long, double> t;
+		for (long i = 0; i < M_6; i++)
+		{
+			double p1 = mers_5_div_total[i_div_aa_number];
+			double p2 = one_l_div_total[i_mod_aa_number];
+			double p3 = mers_5_div_total[i_mod_M1];
+			double p4 = one_l_div_total[i_div_M1];
+			double stochastic = (p1 * p2 + p3 * p4) * total_div_2;
 
-        // sig_t_vec = new double[count];
-        // sig_t_indx_vec = new long[count];
+			if (i_mod_aa_number == AA_NUMBER - 1)
+			{
+				i_mod_aa_number = 0;
+				i_div_aa_number++;
+			}
+			else
+				i_mod_aa_number++;
 
-        for (long i = 0; i < M_6; i++)
-        {
-            double p1 = mers_5_div_total[i_div_aa_number];
-            double p2 = one_l_div_total[i_mod_aa_number];
-            double p3 = mers_5_div_total[i_mod_M1];
-            double p4 = one_l_div_total[i_div_M1];
-            double stochastic = (p1 * p2 + p3 * p4) * total_div_2;
+			if (i_mod_M1 == M_5 - 1)
+			{
+				i_mod_M1 = 0;
+				i_div_M1++;
+			}
+			else
+				i_mod_M1++;
 
-            if (i_mod_aa_number == AA_NUMBER - 1)
-            {
-                i_mod_aa_number = 0;
-                i_div_aa_number++;
-            }
-            else
-                i_mod_aa_number++;
+			if (stochastic > EPSILON)
+			{
+				t[i] = (mers_6[i] - stochastic) / stochastic;
+				count++;
+			}
+			else
+				t[i] = 0;
+		}
 
-            if (i_mod_M1 == M_5 - 1)
-            {
-                i_mod_M1 = 0;
-                i_div_M1++;
-            }
-            else
-                i_mod_M1++;
+		delete mers_5_div_total;
+		delete mers_6;
+		delete mers_5;
 
-            if (stochastic > EPSILON)
-            {
-                sig_t_vec.push_back((mers_6[i] - stochastic) / stochastic);
-                sig_t_indx_vec.push_back(i);
-                count++;
-            }
-        }
+		sig_t_vec = new double[count];
+		sig_t_indx_vec = new long[count];
 
-        delete mers_6;
-        delete mers_5;
+		int pos = 0;
+		for (long i = 0; i < M_6; i++)
+		{
+			if (t[i] != 0)
+			{
+				sig_t_vec[pos] = t[i];
+				sig_t_indx_vec[pos] = i;
+				pos++;
+			}
+		}
+		delete t;
 
-        fclose(bacteria_file);
-    }
+		fclose(bacteria_file);
+	}
 };
 
 void ReadInputFile(const char *input_name)
@@ -257,39 +270,22 @@ double CompareBacteria(BacteriaSummary *b1, BacteriaSummary *b2)
 	return correlation / (sqrt(vector_len1) * sqrt(vector_len2));
 }
 
-void RetrieveBacteriaInfo(int *all_counts, Bacteria **local_b, double **all_sig_t_vec, long **all_sig_t_indx_vec)
+void RetrieveBacteriaInfo(int start, int block_size, int *all_counts, Bacteria **local_b, double **all_sig_t_vec, long **all_sig_t_indx_vec)
 {
-	int block_size = (number_bacteria + size - 1) / size;
-
 	for (int i = 0; i < number_bacteria; i++)
 	{
 		int owner_rank = i / block_size;
 
-		if (rank == 0)
-		{
-			if (owner_rank == 0)
-			{
-				all_counts[i] = local_b[i]->count;
-				all_sig_t_vec[i] = local_b[i]->sig_t_vec.data();
-				all_sig_t_indx_vec[i] = local_b[i]->sig_t_indx_vec.data();
-			}
-			else
-			{
-				MPI_Recv(&all_counts[i], 1, MPI_INT, owner_rank, tag_count, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+		MPI_Bcast(&all_counts[i], 1, MPI_INT, owner_rank, MPI_COMM_WORLD);
 
-				all_sig_t_vec[i] = new double[all_counts[i]];
-				MPI_Recv(all_sig_t_vec[i], all_counts[i], MPI_DOUBLE, owner_rank, tag_vec, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-
-				all_sig_t_indx_vec[i] = new long[all_counts[i]];
-				MPI_Recv(all_sig_t_indx_vec[i], all_counts[i], MPI_LONG, owner_rank, tag_indx, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-			}
-		}
-		else if (rank == owner_rank)
+		if (rank != owner_rank)
 		{
-			MPI_Send(&local_b[i]->count, 1, MPI_INT, 0, tag_count, MPI_COMM_WORLD);
-			MPI_Send(local_b[i]->sig_t_vec.data(), local_b[i]->count, MPI_DOUBLE, 0, tag_vec, MPI_COMM_WORLD);
-			MPI_Send(local_b[i]->sig_t_indx_vec.data(), local_b[i]->count, MPI_LONG, 0, tag_indx, MPI_COMM_WORLD);
+			all_sig_t_vec[i] = new double[all_counts[i]];
+			all_sig_t_indx_vec[i] = new long[all_counts[i]];
 		}
+
+		MPI_Bcast(all_sig_t_vec[i], all_counts[i], MPI_DOUBLE, owner_rank, MPI_COMM_WORLD);
+		MPI_Bcast(all_sig_t_indx_vec[i], all_counts[i], MPI_LONG, owner_rank, MPI_COMM_WORLD);
 	}
 }
 
@@ -297,17 +293,6 @@ void CreateSummaries(int *all_counts, double **all_sig_t_vec, long **all_sig_t_i
 {
 	for (int i = 0; i < number_bacteria; i++)
 	{
-		MPI_Bcast(&all_counts[i], 1, MPI_INT, 0, MPI_COMM_WORLD);
-
-		if (rank != 0)
-		{
-			all_sig_t_vec[i] = new double[all_counts[i]];
-			all_sig_t_indx_vec[i] = new long[all_counts[i]];
-		}
-
-		MPI_Bcast(all_sig_t_vec[i], all_counts[i], MPI_DOUBLE, 0, MPI_COMM_WORLD);
-		MPI_Bcast(all_sig_t_indx_vec[i], all_counts[i], MPI_LONG, 0, MPI_COMM_WORLD);
-
 		summaries[i] = new BacteriaSummary();
 		summaries[i]->count = all_counts[i];
 		summaries[i]->sig_t_vec = all_sig_t_vec[i];
@@ -317,31 +302,29 @@ void CreateSummaries(int *all_counts, double **all_sig_t_vec, long **all_sig_t_i
 
 void FreeBacteria(BacteriaSummary **summaries, Bacteria **local_b, int *all_counts, double **all_sig_t_vec, long **all_sig_t_indx_vec)
 {
-    for (int i = 0; i < number_bacteria; i++)
-    {
-        delete summaries[i];
-        if (local_b[i])
-            delete local_b[i];
-    }
+	for (int i = 0; i < number_bacteria; i++)
+	{
+		delete summaries[i];
+		if (local_b[i])
+			delete local_b[i];
+	}
 
-    delete[] summaries;
-    delete[] local_b;
-    delete[] all_counts;
+	delete[] summaries;
+	delete[] local_b;
+	delete[] all_counts;
 
-    for (int i = 0; i < number_bacteria; i++)
-    {
-        delete[] all_sig_t_vec[i];
-        delete[] all_sig_t_indx_vec[i];
-    }
+	for (int i = 0; i < number_bacteria; i++)
+	{
+		delete[] all_sig_t_vec[i];
+		delete[] all_sig_t_indx_vec[i];
+	}
 
-    delete[] all_sig_t_vec;
-    delete[] all_sig_t_indx_vec;
+	delete[] all_sig_t_vec;
+	delete[] all_sig_t_indx_vec;
 }
-
 
 void CompareAllBacteria()
 {
-	Bacteria **local_b = new Bacteria *[number_bacteria];
 	BacteriaSummary **summaries = new BacteriaSummary *[number_bacteria];
 
 	int *all_counts = new int[number_bacteria];
@@ -350,30 +333,40 @@ void CompareAllBacteria()
 
 	int block_size = (number_bacteria + size - 1) / size;
 	int start = rank * block_size;
+
+	Bacteria **local_b = new Bacteria *[block_size];
+
 	for (int i = start; i < number_bacteria; i++)
 	{
 		if (i >= start && i < start + block_size)
 		{
-        printf("Rank %d loading bacteria %d of %d\n", rank, i, number_bacteria);
-			local_b[i] = new Bacteria(&bacteria_name[i * NAME_SIZE]);
+			printf("Rank %d loading bacteria %d of %d\n", rank, i, number_bacteria);
+
+			int local_index = i - start;
+			local_b[local_index] = new Bacteria(&bacteria_name[i * NAME_SIZE]);
+			all_counts[i] = local_b[local_index]->count;
+			all_sig_t_vec[i] = local_b[local_index]->sig_t_vec;
+			all_sig_t_indx_vec[i] = local_b[local_index]->sig_t_indx_vec;
 		}
 		else
 		{
-			local_b[i] = nullptr;
+			all_sig_t_vec[i] = nullptr;
+			all_sig_t_indx_vec[i] = nullptr;
 		}
 	}
 
 	MPI_Barrier(MPI_COMM_WORLD);
 
-	RetrieveBacteriaInfo(all_counts, local_b, all_sig_t_vec, all_sig_t_indx_vec);
+	RetrieveBacteriaInfo(start, block_size, all_counts, local_b, all_sig_t_vec, all_sig_t_indx_vec);
 	CreateSummaries(all_counts, all_sig_t_vec, all_sig_t_indx_vec, summaries);
- 	
+
 	for (int i = rank; i < number_bacteria; i += size)
 	{
 		for (int j = i + 1; j < number_bacteria; j++)
 		{
 			double correlation = CompareBacteria(summaries[i], summaries[j]);
-            printf("%2d %2d -> %.20lf\n, from %d", i, j, correlation, rank);
+			printf("Rank %d: %2d %2d -> %.20lf\n", rank, i, j, correlation);
+			fflush(stdout);
 		}
 	}
 
@@ -407,7 +400,8 @@ int main(int argc, char *argv[])
 
 	auto end = std::chrono::high_resolution_clock::now();
 	std::chrono::duration<double> elapsed = end - start;
-	if (rank == 0) std::cout << "Time elapsed: " << elapsed.count() << " seconds\n";
+	if (rank == 0)
+		std::cout << "Time elapsed: " << elapsed.count() << " seconds\n";
 	MPI_Finalize();
 	return 0;
 }
